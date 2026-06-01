@@ -11,7 +11,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     // Ưu tiên lấy theme từ localStorage, nếu không có thì mặc định là 'dark'
     const [theme, setTheme] = useState<ThemeMode>(() => {
-        return (localStorage.getItem('theme') as ThemeMode) || 'dark';
+        return (localStorage.getItem('theme') as ThemeMode) || 'light';
     });
 
     // Khi theme thay đổi, chỉ thao tác duy nhất trên thẻ <html>

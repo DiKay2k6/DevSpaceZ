@@ -85,8 +85,6 @@ export const useStardustCanvas = (
                 ctx.save();
                 ctx.globalAlpha = Math.max(0, this.life);
                 ctx.fillStyle = currentColors[this.colorIndex];
-                ctx.shadowBlur = isLight ? 0 : 12;
-                ctx.shadowColor = currentColors[this.colorIndex];
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
@@ -122,8 +120,6 @@ export const useStardustCanvas = (
                 ctx.beginPath();
                 ctx.lineWidth = 2.5 + (i * 0.2);
                 ctx.strokeStyle = currentColors[i];
-                ctx.shadowBlur = isLight ? 0 : 20;
-                ctx.shadowColor = currentColors[i];
                 let isFirst = true;
 
                 for (let x = -50; x <= w + 50; x += 10) {
