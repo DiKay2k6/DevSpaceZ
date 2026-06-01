@@ -8,7 +8,8 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID || 'dummy_id',
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy_secret',
-            callbackURL: '/api/v1/auth/google/callback',
+            callbackURL: process.env.GOOGLE_CALLBACK_URL || 'https://devspacez.onrender.com/api/v1/auth/google/callback',
+            proxy: true // Bắt buộc khi chạy sau Render/Vercel Load Balancer
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
@@ -53,7 +54,8 @@ passport.use(
         {
             clientID: process.env.GITHUB_CLIENT_ID || 'dummy_id',
             clientSecret: process.env.GITHUB_CLIENT_SECRET || 'dummy_secret',
-            callbackURL: '/api/v1/auth/github/callback',
+            callbackURL: process.env.GITHUB_CALLBACK_URL || 'https://devspacez.onrender.com/api/v1/auth/github/callback',
+            proxy: true, // Bắt buộc khi chạy sau Render/Vercel Load Balancer
             scope: ['user:email']
         },
         async (accessToken: string, refreshToken: string, profile: any, done: any) => {
