@@ -68,7 +68,16 @@ export const AvatarUpload: React.FC = () => {
                 onClick={() => !file && inputRef.current?.click()}
             >
                 <div className="w-20 h-20 rounded-2xl overflow-hidden ring-2 ring-slate-200 dark:ring-slate-700 bg-slate-100 dark:bg-slate-800">
-                    <img src={displaySrc} alt="Avatar" className="w-full h-full object-cover" />
+                    <img 
+                        src={displaySrc} 
+                        alt="Avatar" 
+                        className="w-full h-full object-cover" 
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = defaultAv;
+                        }}
+                    />
                 </div>
                 {!file && (
                     <div className="absolute inset-0 rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
