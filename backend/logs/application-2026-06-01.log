@@ -916,3 +916,9 @@
 {"level":"info","message":"[GET] /api/v1/roles?organizationId=6a1aec55fadf3a508fe965ac","timestamp":"2026-06-01 21:46:55"}
 {"level":"info","message":"[GET] /api/v1/workspaces/all/activities?orgId=6a1aec55fadf3a508fe965ac","timestamp":"2026-06-01 21:46:55"}
 {"level":"info","message":"[GET] /api/v1/boards?orgId=6a1aec55fadf3a508fe965ac","timestamp":"2026-06-01 21:46:55"}
+{"level":"info","message":"[GET] /api/v1/boards?orgId=6a1aec55fadf3a508fe965ac","timestamp":"2026-06-01 22:40:17"}
+{"level":"info","message":"[GET] /api/v1/organizations","timestamp":"2026-06-01 22:40:17"}
+{"level":"info","message":"[GET] /api/v1/notifications","timestamp":"2026-06-01 22:40:17"}
+{"level":"info","message":"[GET] /api/v1/roles?organizationId=6a1aec55fadf3a508fe965ac","timestamp":"2026-06-01 22:40:17"}
+{"level":"info","message":"[GET] /api/v1/workspaces/all/activities?orgId=6a1aec55fadf3a508fe965ac","timestamp":"2026-06-01 22:40:17"}
+{"level":"info","message":"[GET] /api/v1/dashboard/metrics?orgId=6a1aec55fadf3a508fe965ac","timestamp":"2026-06-01 22:40:17"}

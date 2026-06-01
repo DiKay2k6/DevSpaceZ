@@ -1,10 +1,10 @@
 import { Worker, Job } from 'bullmq';
 import { sendEmail } from '../utils/email.util';
+import IORedis from 'ioredis';
 
-const connection = {
-    url: process.env.REDIS_URL || 'redis://localhost:6379',
+const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
     maxRetriesPerRequest: null
-};
+});
 
 /**
  * Worker xử lý hàng đợi 'emailQueue'
