@@ -3,6 +3,8 @@ import express from 'express';
 import { register, login, logout, verifyOTP, resendOTP, getMe, getAllUsers, forgotPassword, verifyResetOTP, resetPassword, refreshTokenController } from '../controllers/auth.controller';
 import { protect } from '../middlewares/auth.middleware';
 import { restrictTo } from '../middlewares/authorize.middleware'; // Import middleware phân quyền
+import passport from '../utils/passport';
+import { oauthCallback } from '../controllers/auth.controller';
 
 // Import Middleware và các Schema
 import { validate } from '../middlewares/validate.middleware';
@@ -22,6 +24,13 @@ router.post('/reset-password', validate(resetPasswordSchema), resetPassword);
 
 // Route đăng xuất
 router.post('/logout', logout);
+
+// --- OAUTH ROUTES ---
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth?error=OAuthFailed`, session: false }), oauthCallback);
+
+router.get('/github', passport.authenticate('github', { scope: ['user:email'], session: false }));
+router.get('/github/callback', passport.authenticate('github', { failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth?error=OAuthFailed`, session: false }), oauthCallback);
 
 // Route refresh token
 router.post('/refresh-token', refreshTokenController);

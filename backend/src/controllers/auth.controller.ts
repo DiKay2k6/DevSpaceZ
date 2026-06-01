@@ -3,7 +3,8 @@ import { AuthService } from '../services/auth.service';
 import { asyncHandler } from '../utils/asyncHandler';
 import { AppError } from '../utils/appError';
 import { sendTokenResponse } from '../utils/cookie.util';
-import { User } from '../models/user.model'; // <-- FIX LỖI: Chuyển lên dùng Import tĩnh ở đây
+import { generateAccessToken, generateRefreshToken } from '../utils/jwt.util';
+import { User, IUser } from '../models/user.model'; // <-- FIX LỖI: Chuyển lên dùng Import tĩnh ở đây
 
 const authService = new AuthService();
 
@@ -156,4 +157,25 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response) =>
         status: 'success',
         message: 'Mật khẩu đã được đặt lại thành công! Bạn có thể đăng nhập bằng mật khẩu mới.'
     });
+});
+
+// --- OAUTH CALLBACK ---
+export const oauthCallback = asyncHandler(async (req: Request, res: Response) => {
+    const user = req.user as IUser; // Passport attaches user to req.user
+    if (!user) {
+        return res.redirect(`${process.env.FRONTEND_URL}/auth?error=OAuthFailed`);
+    }
+
+    const accessToken = generateAccessToken(user._id.toString());
+    const refreshToken = generateRefreshToken(user._id.toString());
+
+    // Thiết lập cookie Refresh Token
+    res.cookie('jwt_refresh', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
+    });
+
+    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?token=${accessToken}`);
 });

@@ -4,7 +4,8 @@ import bcrypt from 'bcrypt';
 // 1. Khai báo Interface cho User Document (chuẩn TypeScript)
 export interface IUser extends Document {
     email: string;
-    password_hash: string;
+    password_hash?: string;
+    auth_providers?: { provider: string; provider_id: string }[];
     full_name: string;
     avatar_url?: string;
     role: 'Manager' | 'Developer' | 'Viewer';
@@ -33,10 +34,14 @@ const userSchema = new Schema<IUser>(
         },
         password_hash: {
             type: String,
-            required: [true, 'Mật khẩu là bắt buộc'],
+            required: false, // Bắt buộc false vì OAuth không có mật khẩu
             minlength: [8, 'Mật khẩu phải có ít nhất 8 ký tự'],
             select: false // KHÔNG tự động query password ra để tránh lộ bảo mật
         },
+        auth_providers: [{
+            provider: { type: String, enum: ['google', 'github'] },
+            provider_id: { type: String }
+        }],
         full_name: {
             type: String,
             required: [true, 'Họ và tên là bắt buộc'],
@@ -99,6 +104,7 @@ userSchema.pre('save', async function (this: IUser) {
 
 // 4. Instance Method: So sánh mật khẩu lúc người dùng đăng nhập
 userSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
+    if (!this.password_hash) return false;
     return await bcrypt.compare(candidatePassword, this.password_hash);
 };
 

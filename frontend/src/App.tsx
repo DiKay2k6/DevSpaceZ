@@ -29,6 +29,7 @@ const Pricing = lazy(() => import('./pages/Pricing'));
 const Docs = lazy(() => import('./pages/Docs'));
 const Support = lazy(() => import('./pages/Support'));
 const AuthPage = lazy(() => import('./pages/AuthPage'));
+const AuthCallback = lazy(() => import('./features/auth/components/AuthCallback').then(m => ({ default: m.AuthCallback })));
 const SettingsLayout = lazy(() => import('./layouts/SettingsLayout/SettingsLayout'));
 const AccountSettings = lazy(() => import('./pages/dashboard/settings/AccountSettings'));
 const SecuritySettings = lazy(() => import('./pages/dashboard/settings/SecuritySettings'));
@@ -125,6 +126,8 @@ const App: React.FC = () => {
             <Route element={<PublicRoute />}>
               <Route path="/auth" element={<AuthPage />} />
             </Route>
+            {/* Callback không bọc bằng PublicRoute để tránh lỗi chớp redirect khi chưa có user */}
+            <Route path="/auth/callback" element={<AuthCallback />} />
 
             {/* NHÓM 3: Trang Quản trị (Dashboard) - DÀNH CHO USER ĐÃ ĐĂNG NHẬP */}
             {/* Bọc bằng ProtectedRoute -> Nếu chưa login mà gõ /dashboard thì đá văng ra /auth */}
