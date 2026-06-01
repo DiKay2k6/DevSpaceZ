@@ -1,9 +1,11 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { dockerApi } from '@/features/docker/api/docker.api';
-import { Server, Activity, Cpu, HardDrive, Wifi, Loader2, AlertTriangle } from 'lucide-react';
+import { Server, Activity, Cpu, HardDrive, Wifi, Loader2, AlertTriangle, ShieldAlert } from 'lucide-react';
+import { useAuthStore } from '@/entities/user/model/authStore';
 
 export const DockerMonitor: React.FC = () => {
+    const { user } = useAuthStore();
     const { data, isLoading, isError } = useQuery({
         queryKey: ['docker-stats'],
         queryFn: dockerApi.getStats,
@@ -46,23 +48,34 @@ export const DockerMonitor: React.FC = () => {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                            Docker Monitor
+                            Organization Infrastructure
                             <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs uppercase tracking-wider font-bold">
                                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                Live
+                                Cloud
                             </span>
                         </h1>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">Giám sát tài nguyên máy chủ và trạng thái các container theo thời gian thực</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">Giám sát tài nguyên máy chủ và trạng thái các Workspace Container (LSP) của Tổ chức.</p>
                     </div>
                 </div>
             </div>
+
+            {/* Cảnh báo quyền truy cập */}
+            {user?.role !== 'admin' && (
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 text-blue-800 dark:text-blue-200 p-4 rounded-2xl flex items-start gap-3">
+                    <ShieldAlert className="shrink-0 mt-0.5" size={18} />
+                    <div>
+                        <p className="font-bold">Trang quản trị cấp cao (Enterprise Level)</p>
+                        <p className="text-sm mt-1">Tính năng này được thiết kế dành riêng cho Owner/Manager để giám sát cụm Cloud Server (Kubernetes/Docker Swarm) tập trung của Tổ chức, không phải dùng để theo dõi máy tính cá nhân của lập trình viên.</p>
+                    </div>
+                </div>
+            )}
 
             {isMock && (
                 <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/30 text-amber-800 dark:text-amber-200 p-4 rounded-2xl flex items-start gap-3">
                     <AlertTriangle className="shrink-0 mt-0.5" size={18} />
                     <div>
-                        <p className="font-bold">Lưu ý: Chế độ Giả lập (Mock Mode)</p>
-                        <p className="text-sm mt-1">Backend không tìm thấy tiến trình Docker đang chạy. Dưới đây là dữ liệu giả lập để hiển thị giao diện.</p>
+                        <p className="font-bold">Lưu ý: Môi trường Cloud Server hiện tại không hỗ trợ Docker</p>
+                        <p className="text-sm mt-1">Backend đang chạy trên Render (PaaS) nên không có quyền truy cập vào Docker Daemon. Dưới đây là dữ liệu giả lập (Mock) của các Workspace Container để demo UI.</p>
                     </div>
                 </div>
             )}
