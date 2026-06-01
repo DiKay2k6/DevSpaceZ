@@ -93,7 +93,7 @@ const userSchema = new Schema<IUser>(
 // 3. Middleware (Mongoose Hook): Tự động băm mật khẩu trước khi lưu (Save)
 userSchema.pre('save', async function (this: IUser) {
     // Chỉ băm lại nếu trường password bị thay đổi (hoặc tạo mới)
-    if (!this.isModified('password_hash')) {
+    if (!this.isModified('password_hash') || !this.password_hash) {
         return;
     }
 

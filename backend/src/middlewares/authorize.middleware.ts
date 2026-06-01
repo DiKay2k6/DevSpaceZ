@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/appError';
+import { IUser } from '../models/user.model';
 
 // Sử dụng Rest Parameter (...roles) để gom tất cả các quyền được truyền vào thành 1 mảng
 export const restrictTo = (...roles: string[]) => {
@@ -9,8 +10,10 @@ export const restrictTo = (...roles: string[]) => {
             return next(new AppError('Bạn chưa đăng nhập.', 401));
         }
 
+        const user = req.user as IUser;
+
         // Nếu role của user hiện tại KHÔNG NẰM TRONG danh sách được phép
-        if (!roles.includes(req.user.role)) {
+        if (!roles.includes(user.role)) {
             return next(new AppError('Bạn không có quyền thực hiện hành động này.', 403));
         }
 
