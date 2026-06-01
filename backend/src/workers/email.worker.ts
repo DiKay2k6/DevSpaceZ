@@ -2,7 +2,8 @@ import { Worker, Job } from 'bullmq';
 import { sendEmail } from '../utils/email.util';
 
 const connection = {
-    url: process.env.REDIS_URL || 'redis://localhost:6379'
+    url: process.env.REDIS_URL || 'redis://localhost:6379',
+    maxRetriesPerRequest: null
 };
 
 /**
