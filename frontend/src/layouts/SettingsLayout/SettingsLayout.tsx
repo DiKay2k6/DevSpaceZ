@@ -97,7 +97,25 @@ export const SettingsLayout: React.FC = () => {
                             className="flex items-center gap-3 pl-1.5 pr-3 py-1.5 rounded-2xl border bg-white dark:bg-[#111520] border-slate-200 dark:border-[#ffffff1a] hover:border-blue-300 dark:hover:border-[#ffffff3a] transition-all"
                         >
                             <div className={`w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-inner ${avatarSrc ? '' : 'bg-gradient-to-br from-blue-500 to-violet-600'}`}>
-                                {avatarSrc ? <img src={avatarSrc} alt="av" className="w-full h-full object-cover" /> : initials}
+                                {avatarSrc ? (
+                                    <img 
+                                        src={avatarSrc} 
+                                        alt="av" 
+                                        className="w-full h-full object-cover" 
+                                        referrerPolicy="no-referrer"
+                                        onError={(e) => {
+                                            const target = e.currentTarget;
+                                            target.onerror = null;
+                                            target.style.display = 'none';
+                                            if (target.parentElement) {
+                                                target.parentElement.classList.add('bg-gradient-to-br', 'from-blue-500', 'to-violet-600');
+                                                target.parentElement.innerText = initials;
+                                            }
+                                        }}
+                                    />
+                                ) : (
+                                    initials
+                                )}
                             </div>
                             <div className="hidden lg:block text-left">
                                 <p className="text-[13px] font-bold leading-tight text-slate-900 dark:text-white">{user?.full_name}</p>

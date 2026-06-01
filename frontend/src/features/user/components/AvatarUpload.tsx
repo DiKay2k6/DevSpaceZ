@@ -18,9 +18,6 @@ export const AvatarUpload: React.FC = () => {
     const [error,       setError]       = useState<string | null>(null);
     const [successMsg,  setSuccessMsg]  = useState<string | null>(null);
 
-    const defaultAv = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name ?? 'User')}&background=6366f1&color=fff&size=150`;
-    const displaySrc = preview ?? (user?.avatar_url ? user.avatar_url : defaultAv);
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const chosen = e.target.files?.[0];
         if (!chosen) return;
@@ -67,20 +64,34 @@ export const AvatarUpload: React.FC = () => {
                 className="relative group cursor-pointer flex-shrink-0"
                 onClick={() => !file && inputRef.current?.click()}
             >
-                <div className="w-20 h-20 rounded-2xl overflow-hidden ring-2 ring-slate-200 dark:ring-slate-700 bg-slate-100 dark:bg-slate-800">
-                    <img 
-                        src={displaySrc} 
-                        alt="Avatar" 
-                        className="w-full h-full object-cover" 
-                        referrerPolicy="no-referrer"
-                        onError={(e) => {
-                            e.currentTarget.onerror = null;
-                            e.currentTarget.src = defaultAv;
-                        }}
-                    />
+                <div className="w-20 h-20 rounded-2xl overflow-hidden ring-2 ring-slate-200 dark:ring-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative">
+                    {preview ? (
+                        <img src={preview} alt="Preview" className="w-full h-full object-cover absolute inset-0" />
+                    ) : user?.avatar_url ? (
+                        <>
+                            <img 
+                                src={user.avatar_url} 
+                                alt="Avatar" 
+                                className="w-full h-full object-cover absolute inset-0 z-10" 
+                                referrerPolicy="no-referrer"
+                                onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                                    if (fallback) fallback.style.display = 'flex';
+                                }}
+                            />
+                            <div className="w-full h-full hidden items-center justify-center bg-gradient-to-tr from-blue-600 to-purple-600 text-white font-bold text-3xl absolute inset-0 z-0">
+                                {user?.full_name?.charAt(0).toUpperCase() || 'U'}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-tr from-blue-600 to-purple-600 text-white font-bold text-3xl absolute inset-0">
+                            {user?.full_name?.charAt(0).toUpperCase() || 'U'}
+                        </div>
+                    )}
                 </div>
                 {!file && (
-                    <div className="absolute inset-0 rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="absolute inset-0 rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-20">
                         <Camera size={18} className="text-white" />
                     </div>
                 )}
