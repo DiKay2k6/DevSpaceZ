@@ -39,14 +39,14 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
     res.clearCookie('jwt_refresh', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+        sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax'
     });
     
     // Xóa thêm cookie 'jwt' cũ (từ kiến trúc cũ) nếu vẫn còn kẹt trong trình duyệt
     res.clearCookie('jwt', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+        sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax'
     });
 
     res.status(200).json({
