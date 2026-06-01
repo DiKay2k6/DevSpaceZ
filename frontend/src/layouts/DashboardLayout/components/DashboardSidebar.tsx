@@ -106,21 +106,31 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ isExpanded, 
 
                     {showOrgMenu && (
                         <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#151A26] border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg z-50 py-1 max-h-64 overflow-y-auto custom-scrollbar flex flex-col">
+                            <div className="px-3 py-1.5 mt-1 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                                Tài khoản của bạn
+                            </div>
+                            <button
+                                onClick={() => {
+                                    setCurrentOrganization(null as any);
+                                    setShowOrgMenu(false);
+                                }}
+                                className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-white/5 transition-colors ${!currentOrganization ? 'text-blue-600 font-bold bg-blue-50 dark:bg-blue-900/10' : 'text-slate-700 dark:text-slate-300'}`}
+                            >
+                                <span className="flex items-center gap-2 whitespace-nowrap">
+                                    <div className="w-6 h-6 rounded-md bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 text-slate-600 dark:text-slate-300"><User size={14} /></div>
+                                    Không gian Cá nhân
+                                </span>
+                            </button>
+                            
+                            <div className="h-px bg-slate-100 dark:bg-white/5 my-2 mx-2"></div>
+                            
+                            <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center justify-between">
+                                <span>Tổ chức của bạn</span>
+                                <span className="bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded text-[10px]">{organizations?.length || 0}</span>
+                            </div>
+
                             {organizations && organizations.length > 0 ? (
                                 <>
-                                    <button
-                                        onClick={() => {
-                                            setCurrentOrganization(null as any);
-                                            setShowOrgMenu(false);
-                                        }}
-                                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-white/5 transition-colors ${!currentOrganization ? 'text-blue-600 font-bold bg-blue-50 dark:bg-blue-900/10' : 'text-slate-700 dark:text-slate-300'}`}
-                                    >
-                                        <span className="flex items-center gap-2 whitespace-nowrap">
-                                            <div className="w-6 h-6 rounded-md bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">👤</div>
-                                            Không gian Cá nhân
-                                        </span>
-                                    </button>
-                                    <div className="h-px bg-slate-100 dark:bg-white/5 my-1 mx-2"></div>
                                     {organizations.map(org => (
                                         <button
                                             key={org._id}
@@ -138,7 +148,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ isExpanded, 
                                     ))}
                                 </>
                             ) : (
-                                <div className="px-4 py-3 text-sm text-slate-500 italic whitespace-nowrap">Không có tổ chức nào</div>
+                                <div className="px-4 py-3 text-sm text-slate-500 italic whitespace-nowrap text-center">Không có tổ chức nào</div>
                             )}
                             
                             <div className="p-2 mt-1 border-t border-slate-100 dark:border-slate-800">

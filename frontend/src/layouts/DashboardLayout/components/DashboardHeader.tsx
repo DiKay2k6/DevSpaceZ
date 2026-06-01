@@ -75,7 +75,22 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ toggleCollapse
                     >
                         <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-inner overflow-hidden ${isAuthenticated && !user?.avatar_url ? 'bg-gradient-to-tr from-blue-600 to-purple-600' : 'bg-slate-400 dark:bg-slate-600'}`}>
                             {user?.avatar_url ? (
-                                <img src={user.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                                <img 
+                                    src={user.avatar_url} 
+                                    alt="Avatar" 
+                                    className="w-full h-full object-cover" 
+                                    referrerPolicy="no-referrer"
+                                    onError={(e) => {
+                                        const target = e.currentTarget;
+                                        target.onerror = null;
+                                        target.style.display = 'none';
+                                        if (target.parentElement) {
+                                            // Fallback to text initials
+                                            target.parentElement.classList.add('bg-gradient-to-tr', 'from-blue-600', 'to-purple-600');
+                                            target.parentElement.innerText = getInitials(user?.full_name);
+                                        }
+                                    }}
+                                />
                             ) : (
                                 getInitials(user?.full_name)
                             )}
