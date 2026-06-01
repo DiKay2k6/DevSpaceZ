@@ -1,0 +1,59 @@
+name: DevSpaceZ CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test-backend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install dependencies (Shared & Backend)
+      run: |
+        npm install --workspace=backend --workspace=shared || (cd backend && npm install)
+        
+    - name: Build Backend
+      run: |
+        cd backend
+        npm run build
+        
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install dependencies (Shared & Frontend)
+      run: |
+        npm install --workspace=frontend --workspace=shared || (cd frontend && npm install)
+        
+    - name: Build Frontend
+      run: |
+        cd frontend
+        npm run build
+
+  docker-build:
+    needs: [build-and-test-backend, build-frontend]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build and Push docker-compose
+      run: |
+        # Chỉ chạy lệnh build docker-compose để kiểm tra Dockerfile có build được không.
+        # Ở production thực tế, bạn có thể đẩy hình ảnh lên Docker Hub hoặc AWS ECR.
+        docker-compose build

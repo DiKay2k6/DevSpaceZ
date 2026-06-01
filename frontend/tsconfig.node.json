@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "skipLibCheck": true,
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "allowSyntheticDefaultImports": true,
+        "types": [
+            "node"
+        ] // Thêm dòng này để TS nhận diện được Node.js
+    },
+    "include": [
+        "vite.config.ts"
+    ]
+}

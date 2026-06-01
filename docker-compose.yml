@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # 1. MongoDB Database
+  mongodb:
+    image: mongo:6.0
+    container_name: devspace_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - devspace_mongo_data:/data/db
+    networks:
+      - devspace_network
+
+  # 2. Redis Cache (tuỳ chọn cho Backend tuỳ mô hình, hiện tại backend package.json có redis)
+  redis:
+    image: redis:7-alpine
+    container_name: devspace_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - devspace_network
+
+  # 3. Backend (Node.js)
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: devspace_backend
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ENV=production
+      - PORT=5001
+      - MONGO_URI=mongodb://mongodb:27017/devspace
+      - JWT_SECRET=${JWT_SECRET:-devspace_super_secret_key_2026}
+      - EMAIL_USER=${EMAIL_USER:-dikaystudiocorp@gmail.com}
+      - EMAIL_PASS=${EMAIL_PASS:-vuhsvlqrhapvfhqu}
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - devspace_uploads:/app/backend/public/uploads
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - devspace_network
+
+  # 4. Frontend (React + Nginx)
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: devspace_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - devspace_network
+
+volumes:
+  devspace_mongo_data:
+  devspace_uploads:
+
+networks:
+  devspace_network:
+    driver: bridge

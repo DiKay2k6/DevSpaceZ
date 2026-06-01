@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: devspacez-backend
+    env: node
+    buildCommand: "cd backend && npm install && npm run build"
+    startCommand: "cd backend && npm run start"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5001
+      - key: FRONTEND_URL
+        value: https://your-vercel-domain.vercel.app # Bạn cần cập nhật cái này sau khi deploy Frontend
+      # Thêm các biến môi trường khác (MongoDB, Redis, JWT) trực tiếp trên giao diện của Render

@@ -1,0 +1,4 @@
+@import "tailwindcss";
+
+/* Cấu hình Dark Mode dựa trên class 'dark' thay vì hệ thống máy tính */
+@variant dark (&:where(.dark, .dark *));
