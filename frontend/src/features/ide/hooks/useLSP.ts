@@ -3,6 +3,7 @@ import { MonacoLanguageClient } from 'monaco-languageclient';
 import { CloseAction, ErrorAction } from 'vscode-languageclient/browser.js';
 import { toSocket, WebSocketMessageReader, WebSocketMessageWriter } from 'vscode-ws-jsonrpc';
 import axiosClient from '@/shared/api/axiosClient';
+import { getWebSocketUrl } from '@/shared/utils/websocket';
 
 interface UseLSPProps {
     language: string;
@@ -38,7 +39,7 @@ export const useLSP = ({ language, workspaceId, enabled }: UseLSPProps) => {
                 // 2. Kết nối WebSocket tới proxy của backend
                 // Giả định backend proxy ở cổng 5001 
                 // Cần dùng ws:// hoặc wss:// tuỳ môi trường
-                const wsUrl = `ws://localhost:5001/lsp/${port}`;
+                const wsUrl = getWebSocketUrl(`/lsp/${port}`, port.toString());
                 const webSocket = new WebSocket(wsUrl);
                 webSocketRef.current = webSocket;
 

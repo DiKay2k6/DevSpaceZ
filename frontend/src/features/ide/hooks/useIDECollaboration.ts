@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { useAuthStore } from '@/entities/user/model/authStore';
+import { getWebSocketUrl } from '@/shared/utils/websocket';
 
 interface IDECollaborationOptions {
     roomId: string | null;
@@ -23,7 +24,7 @@ export const useIDECollaboration = ({ roomId, isHost }: IDECollaborationOptions)
         yDocRef.current = ydoc;
 
         // Cấu hình URL WebSocket Backend (Thay đổi khi deploy)
-        const wsUrl = import.meta.env.VITE_WEBSOCKET_URL || 'ws://localhost:5001/yjs';
+        const wsUrl = getWebSocketUrl('/yjs');
 
         // Khởi tạo WebsocketProvider
         const provider = new WebsocketProvider(wsUrl, `devspacez-ide-${roomId}`, ydoc);

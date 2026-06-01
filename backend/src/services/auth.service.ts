@@ -2,7 +2,6 @@ import { UserRepository } from '../repositories/user.repository';
 import { generateAccessToken, generateRefreshToken } from '../utils/jwt.util';
 import { addEmailToQueue } from '../queues/email.queue';
 import { AppError } from '../utils/appError'; // <-- Thêm dòng này ở trên cùng
-import { Organization } from '../models/organization.model';
 
 const userRepository = new UserRepository();
 
@@ -63,18 +62,6 @@ export class AuthService {
         user.otp_expires_at = undefined;
         await userRepository.save(user);
 
-        // Tạo tổ chức cá nhân mặc định
-        const newOrg = await Organization.create({
-            name: `Tổ chức của ${user.full_name}`,
-            description: 'Tổ chức cá nhân mặc định',
-            ownerId: user._id,
-            members: [{
-                userId: user._id,
-                role: 'Owner',
-                status: 'Joined',
-                joinedAt: new Date()
-            }]
-        });
 
         const accessToken = generateAccessToken(user._id.toString());
         const refreshToken = generateRefreshToken(user._id.toString());

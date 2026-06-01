@@ -16,6 +16,7 @@ import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { useAuthStore } from '@/entities/user/model/authStore';
 import { EditorToolbar } from './EditorToolbar';
+import { getWebSocketUrl } from '@/shared/utils/websocket';
 
 interface EditorProps {
     docId: string;
@@ -39,7 +40,7 @@ export const CollaborativeEditor: React.FC<EditorProps> = ({ docId, initialTitle
     const { ydoc, provider } = useMemo(() => {
         const ydoc = new Y.Doc();
         // Cấu hình WebSocket URL (Chạy chung port với API server hoặc khác nếu setup rời)
-        const wsUrl = import.meta.env.VITE_WS_URL || (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/yjs';
+        const wsUrl = getWebSocketUrl('/yjs');
         
         const provider = new WebsocketProvider(wsUrl, docId, ydoc, {
             connect: false // Tự connect sau
