@@ -22,7 +22,7 @@ const emailWorker = new Worker('emailQueue', async (job: Job) => {
         throw error; // Ném lỗi để BullMQ tự động retry
     }
 }, { 
-    connection,
+    connection: connection as any,
     concurrency: 5 // Xử lý đồng thời 5 email
 });
 
