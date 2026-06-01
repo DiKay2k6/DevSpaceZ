@@ -59,16 +59,7 @@ export const DockerMonitor: React.FC = () => {
                 </div>
             </div>
 
-            {/* Cảnh báo quyền truy cập */}
-            {user?.role !== 'admin' && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 text-blue-800 dark:text-blue-200 p-4 rounded-2xl flex items-start gap-3">
-                    <ShieldAlert className="shrink-0 mt-0.5" size={18} />
-                    <div>
-                        <p className="font-bold">Trang quản trị cấp cao (Enterprise Level)</p>
-                        <p className="text-sm mt-1">Tính năng này được thiết kế dành riêng cho Owner/Manager để giám sát cụm Cloud Server (Kubernetes/Docker Swarm) tập trung của Tổ chức, không phải dùng để theo dõi máy tính cá nhân của lập trình viên.</p>
-                    </div>
-                </div>
-            )}
+            {/* Cảnh báo quyền truy cập đã được gỡ bỏ theo yêu cầu để giao diện clean hơn */}
 
             {isMock && (
                 <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/30 text-amber-800 dark:text-amber-200 p-4 rounded-2xl flex items-start gap-3">
