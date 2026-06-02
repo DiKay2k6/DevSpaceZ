@@ -183,15 +183,19 @@ Quy tắc bắt buộc:
                 let currentTaskOrder = 1000;
 
                 if (listData.tasks && listData.tasks.length > 0) {
+                    const validPriorities = ['Low', 'Medium', 'High'];
+                    const validTypes = ['Task', 'Feature', 'Bug', 'Chore', 'Epic'];
+                    const validComponents = ['Frontend', 'Backend', 'Database', 'DevOps', 'Design', 'Other'];
+
                     const tasksToCreate = listData.tasks.map((task: any) => ({
                         title: task.title,
                         description: task.description,
-                        priority: task.priority || 'Medium',
-                        type: task.type || 'Task',
+                        priority: validPriorities.includes(task.priority) ? task.priority : 'Medium',
+                        type: validTypes.includes(task.type) ? task.type : 'Task',
                         listId: newList[0]._id,
                         boardId: boardId,
                         order: currentTaskOrder += 1000,
-                        component: task.component,
+                        component: validComponents.includes(task.component) ? task.component : undefined,
                         storyPoints: task.storyPoints,
                         startDate: task.startDate ? new Date(task.startDate) : undefined,
                         dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
