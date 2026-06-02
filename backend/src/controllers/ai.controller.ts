@@ -132,8 +132,25 @@ Quy tắc bắt buộc:
 7. Phân công (Assignees): Đọc danh sách nhân sự (nếu có). Phân tích role và chức danh/chuyên môn để gán userId cho hợp lý. Nếu role là Developer mà chức danh là Backend thì giao việc Backend. Nếu thiếu thông tin, tự phán đoán logic nhất. Điền mảng các userId vào assignees. Trả về mảng rỗng nếu không có ai hợp.
 8. Trả về ngôn ngữ Tiếng Việt.`;
 
-        const result = await model.generateContent(promptText);
-        const text = result.response.text();
+        let result;
+        let text = "";
+        let retries = 3;
+        
+        while (retries > 0) {
+            try {
+                result = await model.generateContent(promptText);
+                text = result.response.text();
+                break; // Thành công thì thoát vòng lặp
+            } catch (error: any) {
+                if (error.message?.includes('503') && retries > 1) {
+                    console.log(\`Gemini API 503 Error. Đang thử lại... (\${retries - 1} lần thử còn lại)\`);
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // Đợi 2 giây
+                    retries--;
+                } else {
+                    throw error; // Quá số lần thử hoặc lỗi khác thì ném ra ngoài
+                }
+            }
+        }
         
         // Dọn dẹp markdown bọc quanh JSON (nếu có)
         const cleanText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
