@@ -9,11 +9,13 @@ import { BoardColumn } from '@/features/board/components/BoardColumn';
 import { PlanView } from '@/features/board/components/PlanView';
 import { CommandPalette } from '@/features/board/components/CommandPalette';
 import { Button } from '@/shared/ui/Button';
-import { Loader2, Plus, X, Kanban, List, Command } from 'lucide-react';
+import { Loader2, Plus, X, Kanban, List, Command, Sparkles } from 'lucide-react';
 import { useKanbanLogic } from '@/features/board/hooks/useKanbanLogic';
+import { AIGenerateModal } from '@/features/board/components/AIGenerateModal';
 
 export const KanbanBoard: React.FC = () => {
     const { id } = useParams<{ id: string }>();
+    const [isAIModalOpen, setIsAIModalOpen] = React.useState(false);
     
     const {
         localBoard,
@@ -107,19 +109,30 @@ export const KanbanBoard: React.FC = () => {
 
                 {/* View Mode Toggle */}
                 <div className="px-8 pt-4 pb-2 flex items-center justify-between">
-                    <div className="flex bg-slate-200/50 dark:bg-white/5 p-1 rounded-lg backdrop-blur-sm">
-                        <button
-                            onClick={() => setViewMode('kanban')}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-all ${viewMode === 'kanban' ? 'bg-white dark:bg-[#151A26] text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-white/10'}`}
-                        >
-                            <Kanban size={16} /> Board
-                        </button>
-                        <button
-                            onClick={() => setViewMode('plan')}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-all ${viewMode === 'plan' ? 'bg-white dark:bg-[#151A26] text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-white/10'}`}
-                        >
-                            <List size={16} /> Tree Plan
-                        </button>
+                    <div className="flex items-center gap-4">
+                        <div className="flex bg-slate-200/50 dark:bg-white/5 p-1 rounded-lg backdrop-blur-sm">
+                            <button
+                                onClick={() => setViewMode('kanban')}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-all ${viewMode === 'kanban' ? 'bg-white dark:bg-[#151A26] text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-white/10'}`}
+                            >
+                                <Kanban size={16} /> Board
+                            </button>
+                            <button
+                                onClick={() => setViewMode('plan')}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-all ${viewMode === 'plan' ? 'bg-white dark:bg-[#151A26] text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-white/10'}`}
+                            >
+                                <List size={16} /> Tree Plan
+                            </button>
+                        </div>
+                        
+                        {canManageColumns && (
+                            <button 
+                                onClick={() => setIsAIModalOpen(true)}
+                                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 shadow-lg shadow-purple-500/30 transition-all hover:-translate-y-0.5 active:translate-y-0"
+                            >
+                                <Sparkles size={16} /> AI Generate
+                            </button>
+                        )}
                     </div>
 
                     {/* Command Palette Hint */}
@@ -249,7 +262,6 @@ export const KanbanBoard: React.FC = () => {
                     canDeleteBoard={canDeleteBoard}
                 />
 
-                {/* Command Palette */}
                 <CommandPalette
                     isOpen={isCmdPaletteOpen}
                     onClose={() => setIsCmdPaletteOpen(false)}
@@ -260,6 +272,12 @@ export const KanbanBoard: React.FC = () => {
                         setSelectedTask(task);
                         setSelectedListName(list?.title || '');
                     }}
+                />
+
+                <AIGenerateModal 
+                    isOpen={isAIModalOpen}
+                    onClose={() => setIsAIModalOpen(false)}
+                    boardId={id!}
                 />
             </div>
         </div>

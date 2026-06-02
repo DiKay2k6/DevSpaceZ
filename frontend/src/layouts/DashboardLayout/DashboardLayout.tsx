@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { DashboardSidebar } from './components/DashboardSidebar';
 import { DashboardHeader } from './components/DashboardHeader';
+import { FloatingAIAssistant } from '@/features/ai/components/FloatingAIAssistant';
 
 export const DashboardLayout: React.FC = () => {
     const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
@@ -28,10 +29,13 @@ export const DashboardLayout: React.FC = () => {
                     toggleCollapse={() => setIsCollapsed(!isCollapsed)}
                 />
 
-                <main className="flex-1 overflow-y-auto p-8 relative">
+                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50/50 dark:bg-[#0B0F19] transition-colors duration-300 p-8 relative">
                     {/* Render Content */}
                     <Outlet />
                 </main>
+
+                {/* AI Assistant */}
+                <FloatingAIAssistant />
             </div>
         </div>
     );

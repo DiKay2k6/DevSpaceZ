@@ -24,6 +24,7 @@ import roleRoutes from './routes/role.routes';
 import ideRoutes from './routes/ide.routes';
 import ideContainerRoutes from './routes/ideContainer.routes';
 import chatRoutes from './routes/chat.routes';
+import aiRoutes from './routes/ai.routes';
 import { globalErrorHandler } from './middlewares/errorHandler.middleware';
 import { logger } from './utils/logger';
 
@@ -84,6 +85,7 @@ app.use('/api/v1/docker', dockerRoutes);
 app.use('/api/v1/upload', uploadRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/ai', aiRoutes);
 app.use('/api/v1/organizations', organizationRoutes);
 app.use('/api/v1/subteams', subteamRoutes);
 app.use('/api/v1/contacts', contactRoutes);
