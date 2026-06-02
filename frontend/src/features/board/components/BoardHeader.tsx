@@ -186,7 +186,7 @@ export const BoardHeader: React.FC<Props> = ({
                             >
                                 <img 
                                     crossOrigin="anonymous"
-                                    src={member.avatar_url ? member.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(member.full_name)}&background=6366f1&color=fff`} 
+                                    src={member.avatar_url ? member.avatar_url : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(member.full_name)}&backgroundColor=6366f1&textColor=ffffff`} 
                                     alt={member.full_name} 
                                     className="w-7 h-7 rounded-full border border-white dark:border-[#111520] object-cover shadow-sm"
                                 />

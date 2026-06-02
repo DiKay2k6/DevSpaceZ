@@ -196,7 +196,7 @@ export const TaskProperties: React.FC<TaskPropertiesProps> = ({
                                 : user;
                                 
                             const displayName = (memberObj as any)?.full_name?.split(' ')[0] || 'User';
-                            const avatar = (memberObj as any)?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=6366f1&color=fff`;
+                            const avatar = (memberObj as any)?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName)}&backgroundColor=6366f1&textColor=ffffff`;
 
                             return (
                                 <div key={userIdStr || Math.random()} className="flex items-center gap-1.5 bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/10 pl-1 pr-2 py-1 rounded-full shadow-sm group">
@@ -272,7 +272,7 @@ export const TaskProperties: React.FC<TaskPropertiesProps> = ({
                                                 <div className="flex items-center gap-2.5">
                                                     <img 
                                                         crossOrigin="anonymous"
-                                                        src={member.avatar_url ? member.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(member.full_name || 'User')}&background=6366f1&color=fff`} 
+                                                        src={member.avatar_url ? member.avatar_url : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(member.full_name || 'User')}&backgroundColor=6366f1&textColor=ffffff`} 
                                                         alt="Avatar" 
                                                         className="w-6 h-6 rounded-full object-cover"
                                                     />

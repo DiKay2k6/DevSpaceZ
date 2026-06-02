@@ -99,7 +99,7 @@ export const InviteMemberModal: React.FC<Props> = ({ isOpen, onClose, organizati
                                 <div className="flex items-center gap-3 min-w-0">
                                     <img 
                                         crossOrigin="anonymous"
-                                        src={user.avatar_url ? user.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name)}&background=6366f1&color=fff`} 
+                                        src={user.avatar_url ? user.avatar_url : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.full_name)}&backgroundColor=6366f1&textColor=ffffff`} 
                                         alt="Avatar" 
                                         className="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-[#111520] shadow-sm shrink-0"
                                     />

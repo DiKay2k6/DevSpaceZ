@@ -154,7 +154,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ board, onTaskClick, onUpdate
                         {node.assignees && node.assignees.length > 0 ? (
                             <div className="flex -space-x-2">
                                 {node.assignees.map((a: any, i) => {
-                                    const avatarUrl = a.avatar_url ? a.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(a.full_name || 'User')}`;
+                                    const avatarUrl = a.avatar_url ? a.avatar_url : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(a.full_name || 'User')}&backgroundColor=6366f1&textColor=ffffff`;
                                     return (
                                         <img crossOrigin="anonymous" key={i} src={avatarUrl} className="w-6 h-6 rounded-full border-2 border-white dark:border-[#0B0F19]" title={a.full_name} />
                                     );

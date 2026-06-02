@@ -35,7 +35,8 @@ export const AIGenerateModal: React.FC<Props> = ({ isOpen, onClose, boardId }) =
             onClose();
             setPrompt('');
         } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi gọi AI');
+            const errorMessage = typeof error === 'string' ? error : (error.response?.data?.message || 'Có lỗi xảy ra khi gọi AI');
+            toast.error(errorMessage);
         } finally {
             setIsGenerating(false);
         }

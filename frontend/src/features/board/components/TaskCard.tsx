@@ -171,7 +171,7 @@ export const TaskCardComponent: React.FC<Props> = ({ task, index, onClick, onDel
                                     : user;
                                     
                                 const displayName = (memberObj as any)?.full_name || 'User';
-                                const avatar = (memberObj as any)?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=6366f1&color=fff`;
+                                const avatar = (memberObj as any)?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName)}&backgroundColor=6366f1&textColor=ffffff`;
 
                                 return (
                                     <img 
