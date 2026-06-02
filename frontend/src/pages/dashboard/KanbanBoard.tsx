@@ -278,6 +278,7 @@ export const KanbanBoard: React.FC = () => {
                     isOpen={isAIModalOpen}
                     onClose={() => setIsAIModalOpen(false)}
                     boardId={id!}
+                    workspaceMembers={localBoard?.workspace?.members || []}
                 />
             </div>
         </div>

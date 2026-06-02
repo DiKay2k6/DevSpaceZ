@@ -9,9 +9,10 @@ interface Props {
     isOpen: boolean;
     onClose: () => void;
     boardId: string;
+    workspaceMembers?: any[];
 }
 
-export const AIGenerateModal: React.FC<Props> = ({ isOpen, onClose, boardId }) => {
+export const AIGenerateModal: React.FC<Props> = ({ isOpen, onClose, boardId, workspaceMembers = [] }) => {
     const [prompt, setPrompt] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
     const queryClient = useQueryClient();
@@ -27,7 +28,7 @@ export const AIGenerateModal: React.FC<Props> = ({ isOpen, onClose, boardId }) =
 
         try {
             setIsGenerating(true);
-            const res = await aiApi.generateBoardTasks(boardId, prompt);
+            const res = await aiApi.generateBoardTasks(boardId, prompt, workspaceMembers);
             toast.success(res.message || 'Tạo Tasks thành công!');
             
             // Re-fetch board data

@@ -47,7 +47,7 @@ export const chatWithAI = async (req: Request, res: Response) => {
 
 export const generateKanbanTasks = async (req: Request, res: Response) => {
     try {
-        const { boardId, prompt } = req.body;
+        const { boardId, prompt, workspaceMembers = [] } = req.body;
 
         if (!boardId || !prompt) {
             throw new AppError(400, 'boardId và prompt là bắt buộc');
@@ -76,12 +76,26 @@ export const generateKanbanTasks = async (req: Request, res: Response) => {
                                         items: {
                                             type: SchemaType.OBJECT,
                                             properties: {
+                                                tempId: { type: SchemaType.STRING, description: "ID định danh tạm thời, vd: task_1, task_2" },
                                                 title: { type: SchemaType.STRING, description: "Tên công việc cần làm" },
                                                 description: { type: SchemaType.STRING, description: "Mô tả công việc chi tiết" },
                                                 priority: { type: SchemaType.STRING, description: "Low, Medium, High" },
-                                                type: { type: SchemaType.STRING, description: "Task, Feature, Bug, Chore, Epic" }
+                                                type: { type: SchemaType.STRING, description: "Task, Feature, Bug, Chore, Epic" },
+                                                component: { type: SchemaType.STRING, description: "Chọn một: Frontend, Backend, Database, DevOps, Design, Other" },
+                                                storyPoints: { type: SchemaType.NUMBER, description: "Độ khó/Thời gian ước lượng (Fibonacci: 1,2,3,5,8)" },
+                                                startDate: { type: SchemaType.STRING, description: "ISO 8601 string" },
+                                                dueDate: { type: SchemaType.STRING, description: "ISO 8601 string" },
+                                                assignees: {
+                                                    type: SchemaType.ARRAY,
+                                                    items: { type: SchemaType.STRING, description: "userId của thành viên được giao" }
+                                                },
+                                                parentId: { type: SchemaType.STRING, description: "tempId của task cha (nếu có)" },
+                                                dependencies: {
+                                                    type: SchemaType.ARRAY,
+                                                    items: { type: SchemaType.STRING, description: "tempId của task mà task này phụ thuộc" }
+                                                }
                                             },
-                                            required: ["title", "description", "priority", "type"]
+                                            required: ["tempId", "title", "description", "priority", "type"]
                                         }
                                     }
                                 },
@@ -94,13 +108,29 @@ export const generateKanbanTasks = async (req: Request, res: Response) => {
             }
         });
 
-        const promptText = `Hãy phân tích dự án sau và chia nhỏ thành các Cột (Lists) và Công việc (Tasks) chi tiết:
-        "${prompt}"
-        
-        Yêu cầu:
-        - Tạo ra ít nhất 2 cột hợp lý với dự án.
-        - Mỗi cột tạo khoảng 3-5 tasks.
-        - Viết bằng Tiếng Việt.`;
+        // Prepare context data
+        const currentDateStr = new Date().toISOString();
+        const membersContext = workspaceMembers.map((m: any) => 
+            `- ID: ${m.userId?._id || m.userId}, Tên: ${m.full_name || m.userId?.full_name}, Vai trò (Role): ${m.role}, Chức danh/Chuyên môn: ${m.title || 'Không rõ'}`
+        ).join('\n');
+
+        const promptText = `Bạn là một Senior Technical Project Manager và Agile Coach. 
+Hôm nay là ngày: ${currentDateStr}.
+Danh sách nhân sự trong dự án:
+${membersContext || '(Không có thành viên nào)'}
+
+Nhiệm vụ: Hãy phân tích yêu cầu sau và thiết lập một bảng Kanban hoàn chỉnh:
+"${prompt}"
+
+Quy tắc bắt buộc:
+1. Tư duy hệ thống: Tự động break down thành các lớp (VD: Database, Backend API, Frontend UI, DevOps) nếu yêu cầu chung chung.
+2. Tạo tempId: Mỗi task BẮT BUỘC có 1 "tempId" duy nhất (vd: "task_1", "task_2").
+3. Thiết lập Component: Bắt buộc chọn đúng 1 trong các giá trị: Frontend, Backend, Database, DevOps, Design, Other.
+4. Thời gian (startDate, dueDate): Bắt đầu từ ngày hôm nay. Các task liên tiếp phải có ngày nối tiếp nhau hợp lý. Tính bằng định dạng ISO 8601.
+5. Story Points: Đánh giá độ khó theo dãy Fibonacci (1, 2, 3, 5, 8).
+6. Phụ thuộc (Dependencies) & ParentId: Dùng tempId để liên kết. Backend phải làm trước Frontend (Frontend block bởi Backend). Epic chứa Task.
+7. Phân công (Assignees): Đọc danh sách nhân sự (nếu có). Phân tích role và chức danh/chuyên môn để gán userId cho hợp lý. Nếu role là Developer mà chức danh là Backend thì giao việc Backend. Nếu thiếu thông tin, tự phán đoán logic nhất. Điền mảng các userId vào assignees. Trả về mảng rỗng nếu không có ai hợp.
+8. Trả về ngôn ngữ Tiếng Việt.`;
 
         const result = await model.generateContent(promptText);
         const text = result.response.text();
@@ -121,9 +151,11 @@ export const generateKanbanTasks = async (req: Request, res: Response) => {
 
         try {
             let createdCount = 0;
+            const tempIdMap = new Map<string, mongoose.Types.ObjectId>();
+            const tasksWithDependencies: any[] = [];
             
+            // Pass 1: Tạo Lists và Insert Tasks
             for (const listData of aiData.lists) {
-                // Tạo List
                 const newList = await List.create([{
                     title: listData.title,
                     boardId: boardId,
@@ -133,7 +165,6 @@ export const generateKanbanTasks = async (req: Request, res: Response) => {
                 currentListOrder += 1000;
                 let currentTaskOrder = 1000;
 
-                // Tạo Tasks cho List này
                 if (listData.tasks && listData.tasks.length > 0) {
                     const tasksToCreate = listData.tasks.map((task: any) => ({
                         title: task.title,
@@ -142,14 +173,66 @@ export const generateKanbanTasks = async (req: Request, res: Response) => {
                         type: task.type || 'Task',
                         listId: newList[0]._id,
                         boardId: boardId,
-                        order: currentTaskOrder += 1000
+                        order: currentTaskOrder += 1000,
+                        component: task.component,
+                        storyPoints: task.storyPoints,
+                        startDate: task.startDate ? new Date(task.startDate) : undefined,
+                        dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+                        assignees: task.assignees || [],
+                        // Temp fields to resolve later
+                        _tempId: task.tempId,
+                        _tempParentId: task.parentId,
+                        _tempDependencies: task.dependencies
                     }));
 
-                    await Task.insertMany(tasksToCreate);
-                    createdCount += tasksToCreate.length;
+                    const insertedTasks = await Task.insertMany(tasksToCreate);
+                    createdCount += insertedTasks.length;
+
+                    // Build Map and collect dependencies
+                    insertedTasks.forEach((t: any, index: number) => {
+                        const originalTask = tasksToCreate[index];
+                        if (originalTask._tempId) {
+                            tempIdMap.set(originalTask._tempId, t._id);
+                        }
+                        if (originalTask._tempParentId || (originalTask._tempDependencies && originalTask._tempDependencies.length > 0)) {
+                            tasksWithDependencies.push({
+                                taskId: t._id,
+                                tempParentId: originalTask._tempParentId,
+                                tempDependencies: originalTask._tempDependencies
+                            });
+                        }
+                    });
                 }
             }
             
+            // Pass 2: Bulk Update ParentId and Dependencies
+            if (tasksWithDependencies.length > 0) {
+                const bulkOps = tasksWithDependencies.map(t => {
+                    const updateData: any = {};
+                    if (t.tempParentId && tempIdMap.has(t.tempParentId)) {
+                        updateData.parentId = tempIdMap.get(t.tempParentId);
+                    }
+                    if (t.tempDependencies && t.tempDependencies.length > 0) {
+                        const validDeps = t.tempDependencies
+                            .map((depId: string) => tempIdMap.get(depId))
+                            .filter(Boolean);
+                        if (validDeps.length > 0) {
+                            updateData.dependencies = validDeps;
+                        }
+                    }
+                    return {
+                        updateOne: {
+                            filter: { _id: t.taskId },
+                            update: { $set: updateData }
+                        }
+                    };
+                });
+                
+                if (bulkOps.length > 0) {
+                    await Task.bulkWrite(bulkOps);
+                }
+            }
+
             res.status(200).json({
                 status: 'success',
                 message: `Đã tạo thành công ${aiData.lists.length} Cột và ${createdCount} Công việc`,
