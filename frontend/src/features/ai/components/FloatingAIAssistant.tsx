@@ -45,7 +45,7 @@ export const FloatingAIAssistant: React.FC = () => {
 
         try {
             const res = await aiApi.chat(userMsg);
-            const reply = res.data.data.reply;
+            const reply = res.data.reply;
             setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
         } catch (error) {
             setMessages(prev => [...prev, { role: 'assistant', content: '❌ Xin lỗi, đã có lỗi xảy ra khi kết nối với máy chủ AI. Vui lòng thử lại sau.' }]);

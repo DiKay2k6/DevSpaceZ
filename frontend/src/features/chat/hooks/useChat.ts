@@ -26,7 +26,7 @@ export const useChat = (chatId?: string, isConversation = false) => {
             try {
                 setLoading(true);
                 const res = await chatApi.getMessages(chatId, isConversation);
-                setMessages(res.data.data.messages);
+                setMessages(res.data.messages);
                 setTimeout(scrollToBottom, 100);
             } catch (error) {
                 console.error('Lỗi khi lấy tin nhắn:', error);

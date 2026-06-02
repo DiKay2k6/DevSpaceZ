@@ -30,7 +30,7 @@ export const FilePermissionModal: React.FC<Props> = ({ isOpen, onClose, workspac
         queryKey: ['file-permissions', workspaceId, filePath],
         queryFn: async () => {
             const res = await axiosClient.get(`/workspaces/${workspaceId}/files/permissions?path=${encodeURIComponent(filePath)}`);
-            return res.data.data;
+            return res.data;
         },
         enabled: isOpen
     });

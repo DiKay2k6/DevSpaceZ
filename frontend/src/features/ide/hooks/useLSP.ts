@@ -29,7 +29,7 @@ export const useLSP = ({ language, workspaceId, enabled }: UseLSPProps) => {
             try {
                 // 1. Gọi API Backend khởi động Docker Container cho LSP
                 const res = await axiosClient.post('/lsp/start', { workspaceId, language });
-                const { port, mock } = res.data.data;
+                const { port, mock } = res.data;
 
                 if (mock) {
                     console.warn(`[LSP] Backend trả về mock port ${port}. Tính năng LSP tạm thời chưa có thật do thiếu Docker image.`);

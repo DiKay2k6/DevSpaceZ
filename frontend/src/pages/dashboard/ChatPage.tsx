@@ -46,7 +46,7 @@ export const ChatPage: React.FC = () => {
         const fetchConversations = async () => {
             try {
                 const res = await chatApi.getConversations();
-                setConversations(res.data.data.conversations);
+                setConversations(res.data.conversations);
             } catch (error) {
                 console.error("Lỗi lấy danh sách chat cá nhân", error);
             }
@@ -86,7 +86,7 @@ export const ChatPage: React.FC = () => {
         try {
             setUploading(true);
             const uploadRes = await chatApi.uploadMedia(file);
-            const { url, mediaType } = uploadRes.data.data;
+            const { url, mediaType } = uploadRes.data;
             
             await chatApi.sendMessage(activeChatId, activeTab === 'direct', '', url, mediaType);
             setTimeout(scrollToBottom, 100);
