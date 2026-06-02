@@ -105,9 +105,12 @@ export const generateKanbanTasks = async (req: Request, res: Response) => {
         const result = await model.generateContent(promptText);
         const text = result.response.text();
         
+        // Dọn dẹp markdown bọc quanh JSON (nếu có)
+        const cleanText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+        
         let aiData;
         try {
-            aiData = JSON.parse(text);
+            aiData = JSON.parse(cleanText);
         } catch (e) {
             throw new AppError(500, 'AI trả về định dạng không hợp lệ');
         }
@@ -115,9 +118,6 @@ export const generateKanbanTasks = async (req: Request, res: Response) => {
         // Lấy order cao nhất hiện tại của list trong board này
         const lastList = await List.findOne({ boardId }).sort('-order');
         let currentListOrder = lastList ? lastList.order + 1000 : 1000;
-
-        const session = await mongoose.startSession();
-        session.startTransaction();
 
         try {
             let createdCount = 0;
@@ -128,7 +128,7 @@ export const generateKanbanTasks = async (req: Request, res: Response) => {
                     title: listData.title,
                     boardId: boardId,
                     order: currentListOrder
-                }], { session });
+                }]);
 
                 currentListOrder += 1000;
                 let currentTaskOrder = 1000;
@@ -145,22 +145,17 @@ export const generateKanbanTasks = async (req: Request, res: Response) => {
                         order: currentTaskOrder += 1000
                     }));
 
-                    await Task.insertMany(tasksToCreate, { session });
+                    await Task.insertMany(tasksToCreate);
                     createdCount += tasksToCreate.length;
                 }
             }
-
-            await session.commitTransaction();
             
             res.status(200).json({
                 status: 'success',
                 message: `Đã tạo thành công ${aiData.lists.length} Cột và ${createdCount} Công việc`,
             });
         } catch (error) {
-            await session.abortTransaction();
             throw error;
-        } finally {
-            session.endSession();
         }
         
     } catch (error: any) {
