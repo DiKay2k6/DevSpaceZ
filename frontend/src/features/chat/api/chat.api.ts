@@ -16,19 +16,31 @@ export interface IMessage {
 }
 
 export const chatApi = {
-    getMessages: (boardId: string, page = 1, limit = 50) => {
-        return axiosClient.get(`/chat/${boardId}`, {
-            params: { page, limit }
+    getMessages: (chatId: string, isConversation: boolean, page = 1, limit = 50) => {
+        return axiosClient.get(`/chat/messages`, {
+            params: { 
+                [isConversation ? 'conversationId' : 'boardId']: chatId,
+                page, 
+                limit 
+            }
         });
     },
 
-    sendMessage: (boardId: string, content: string, mediaUrl?: string, mediaType?: string) => {
-        return axiosClient.post('/chat', {
-            boardId,
+    sendMessage: (chatId: string, isConversation: boolean, content: string, mediaUrl?: string, mediaType?: string) => {
+        return axiosClient.post('/chat/messages', {
+            [isConversation ? 'conversationId' : 'boardId']: chatId,
             content,
             mediaUrl,
             mediaType
         });
+    },
+
+    getConversations: () => {
+        return axiosClient.get('/chat/conversations');
+    },
+
+    findOrCreateConversation: (targetUserId: string) => {
+        return axiosClient.post('/chat/conversations', { targetUserId });
     },
 
     uploadMedia: (file: File) => {

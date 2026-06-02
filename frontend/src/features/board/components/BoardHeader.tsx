@@ -9,8 +9,6 @@ import { userApi } from '@/features/user/api/user.api';
 import { WorkspaceMemberModal } from '@/features/workspace/components/WorkspaceMemberModal';
 import { TaskRequestsDialog } from './TaskRequestsDialog';
 import { BOARD_KEYS } from '@/features/board/hooks/useBoards';
-import { MessageCircle } from 'lucide-react';
-import { BoardChatDrawer } from '@/features/chat/components/BoardChatDrawer';
 
 interface Props {
     board: Board;
@@ -39,7 +37,6 @@ export const BoardHeader: React.FC<Props> = ({
 }) => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [isWsModalOpen, setIsWsModalOpen] = useState(false);
-    const [isChatOpen, setIsChatOpen] = useState(false);
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const { user, updateUser } = useAuthStore();
@@ -220,12 +217,6 @@ export const BoardHeader: React.FC<Props> = ({
                 <div className="h-4 w-px bg-slate-300 dark:bg-white/10 hidden sm:block"></div>
 
                 <div className="flex items-center gap-2">
-                    <button 
-                        onClick={() => setIsChatOpen(true)} 
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/20 rounded-md transition-all hover:-translate-y-0.5"
-                    >
-                        <MessageCircle size={14} /> <span className="hidden sm:inline">Thảo luận</span>
-                    </button>
                     <button onClick={() => setIsWsModalOpen(true)} className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-white/5 rounded-md transition-all">
                         <Users size={14} /> Nhân sự
                     </button>
@@ -263,14 +254,6 @@ export const BoardHeader: React.FC<Props> = ({
                 workspaceId={board.workspaceId}
                 currentUserRole={currentUserRole}
                 orgId={board.workspace?.organizationId}
-            />
-
-            {/* Realtime Board Chat Drawer */}
-            <BoardChatDrawer 
-                boardId={board._id} 
-                boardStatus={board.status}
-                isOpen={isChatOpen} 
-                onClose={() => setIsChatOpen(false)} 
             />
         </div>
     );

@@ -5,7 +5,7 @@ import { chatApi, IMessage } from '../api/chat.api';
 
 const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:5001';
 
-export const useBoardChat = (boardId: string) => {
+export const useChat = (chatId?: string, isConversation = false) => {
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [loading, setLoading] = useState(true);
     const [socket, setSocket] = useState<Socket | null>(null);
@@ -22,9 +22,10 @@ export const useBoardChat = (boardId: string) => {
     // 1. Fetch initial messages
     useEffect(() => {
         const fetchMessages = async () => {
+            if (!chatId) return;
             try {
                 setLoading(true);
-                const res = await chatApi.getMessages(boardId);
+                const res = await chatApi.getMessages(chatId, isConversation);
                 setMessages(res.data.data.messages);
                 setTimeout(scrollToBottom, 100);
             } catch (error) {
@@ -34,19 +35,17 @@ export const useBoardChat = (boardId: string) => {
             }
         };
 
-        if (boardId) {
-            fetchMessages();
-        }
-    }, [boardId]);
+        fetchMessages();
+    }, [chatId, isConversation]);
 
     // 2. Initialize Socket Connection
     useEffect(() => {
-        if (!boardId) return;
+        if (!chatId) return;
 
         const newSocket = io(SOCKET_URL);
 
         newSocket.on('connect', () => {
-            newSocket.emit('join_board', boardId);
+            newSocket.emit('join_board', chatId);
         });
 
         newSocket.on('receive_message', (newMessage: IMessage) => {
@@ -62,10 +61,10 @@ export const useBoardChat = (boardId: string) => {
         setSocket(newSocket);
 
         return () => {
-            newSocket.emit('leave_board', boardId);
+            newSocket.emit('leave_board', chatId);
             newSocket.disconnect();
         };
-    }, [boardId]);
+    }, [chatId]);
 
     return {
         messages,

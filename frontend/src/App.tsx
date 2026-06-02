@@ -38,6 +38,7 @@ const KanbanBoard = lazy(() => import('./pages/dashboard/KanbanBoard'));
 const DashboardAnalytics = lazy(() => import('./pages/dashboard/DashboardAnalytics'));
 const Team = lazy(() => import('./pages/dashboard/Team'));
 const DashboardDocs = lazy(() => import('./pages/dashboard/Docs'));
+const ChatPage = lazy(() => import('./pages/dashboard/ChatPage').then(m => ({ default: m.ChatPage })));
 const FullPageIDE = lazy(() => import('./pages/dashboard/FullPageIDE').then(m => ({ default: m.FullPageIDE })));
 const DockerMonitor = lazy(() => import('./pages/dashboard/DockerMonitor'));
 // ----------------------------------------------------------------------
@@ -137,6 +138,7 @@ const App: React.FC = () => {
                 <Route path="monitor" element={<DockerMonitor />} />
                 <Route path="team" element={<Team />} />
                 <Route path="docs" element={<DashboardDocs />} />
+                <Route path="chat" element={<ChatPage />} />
                 <Route path="board/:id" element={<KanbanBoard />} />
                 <Route path="analytics" element={<DashboardAnalytics />} />
               </Route>

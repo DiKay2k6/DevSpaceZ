@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getMessagesByBoard, sendMessage } from '../controllers/chat.controller';
+import { getMessages, sendMessage, getConversations, findOrCreateConversation } from '../controllers/chat.controller';
 import { protect } from '../middlewares/auth.middleware';
 
 const router = Router();
@@ -8,7 +8,9 @@ const router = Router();
 router.use(protect);
 
 // Route: /api/v1/chat
-router.get('/:boardId', getMessagesByBoard);
-router.post('/', sendMessage);
+router.get('/messages', getMessages);
+router.post('/messages', sendMessage);
+router.get('/conversations', getConversations);
+router.post('/conversations', findOrCreateConversation);
 
 export default router;
