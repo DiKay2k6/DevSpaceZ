@@ -65,48 +65,43 @@ export const generateKanbanTasks = async (req: Request, res: Response) => {
                 responseSchema: {
                     type: SchemaType.OBJECT,
                     properties: {
-                        lists: {
+                        tasks: {
                             type: SchemaType.ARRAY,
                             items: {
                                 type: SchemaType.OBJECT,
                                 properties: {
-                                    title: { type: SchemaType.STRING, description: "Tên cột. Ví dụ: Backend, Frontend, DevOps" },
-                                    tasks: {
+                                    tempId: { type: SchemaType.STRING, description: "ID định danh tạm thời, vd: task_1, task_2" },
+                                    title: { type: SchemaType.STRING, description: "Tên công việc cần làm" },
+                                    description: { type: SchemaType.STRING, description: "Mô tả công việc chi tiết" },
+                                    listName: { type: SchemaType.STRING, description: "Tên cột chứa công việc này (Ví dụ: Cần làm (To Do))" },
+                                    priority: { type: SchemaType.STRING, description: "Low, Medium, High" },
+                                    type: { type: SchemaType.STRING, description: "Task, Feature, Bug, Chore, Epic" },
+                                    component: { type: SchemaType.STRING, description: "Chọn một: Frontend, Backend, Database, DevOps, Design, Other" },
+                                    storyPoints: { type: SchemaType.NUMBER, description: "Độ khó/Thời gian ước lượng (Fibonacci: 1,2,3,5,8)" },
+                                    startDate: { type: SchemaType.STRING, description: "ISO 8601 string" },
+                                    dueDate: { type: SchemaType.STRING, description: "ISO 8601 string" },
+                                    assignees: {
                                         type: SchemaType.ARRAY,
-                                        items: {
-                                            type: SchemaType.OBJECT,
-                                            properties: {
-                                                tempId: { type: SchemaType.STRING, description: "ID định danh tạm thời, vd: task_1, task_2" },
-                                                title: { type: SchemaType.STRING, description: "Tên công việc cần làm" },
-                                                description: { type: SchemaType.STRING, description: "Mô tả công việc chi tiết" },
-                                                priority: { type: SchemaType.STRING, description: "Low, Medium, High" },
-                                                type: { type: SchemaType.STRING, description: "Task, Feature, Bug, Chore, Epic" },
-                                                component: { type: SchemaType.STRING, description: "Chọn một: Frontend, Backend, Database, DevOps, Design, Other" },
-                                                storyPoints: { type: SchemaType.NUMBER, description: "Độ khó/Thời gian ước lượng (Fibonacci: 1,2,3,5,8)" },
-                                                startDate: { type: SchemaType.STRING, description: "ISO 8601 string" },
-                                                dueDate: { type: SchemaType.STRING, description: "ISO 8601 string" },
-                                                assignees: {
-                                                    type: SchemaType.ARRAY,
-                                                    items: { type: SchemaType.STRING, description: "userId của thành viên được giao" }
-                                                },
-                                                parentId: { type: SchemaType.STRING, description: "tempId của task cha (nếu có)" },
-                                                dependencies: {
-                                                    type: SchemaType.ARRAY,
-                                                    items: { type: SchemaType.STRING, description: "tempId của task mà task này phụ thuộc" }
-                                                }
-                                            },
-                                            required: ["tempId", "title", "description", "priority", "type"]
-                                        }
+                                        items: { type: SchemaType.STRING, description: "userId của thành viên được giao" }
+                                    },
+                                    parentId: { type: SchemaType.STRING, description: "tempId của task cha (nếu có)" },
+                                    dependencies: {
+                                        type: SchemaType.ARRAY,
+                                        items: { type: SchemaType.STRING, description: "tempId của task mà task này phụ thuộc" }
                                     }
                                 },
-                                required: ["title", "tasks"]
+                                required: ["tempId", "title", "description", "listName", "priority", "type"]
                             }
                         }
                     },
-                    required: ["lists"]
+                    required: ["tasks"]
                 }
             }
         });
+
+        // Fetch existing lists
+        const existingLists = await List.find({ boardId }).sort('order');
+        const existingListsContext = existingLists.map(l => `- Tên Cột: "${l.title}"`).join('\n');
 
         // Prepare context data
         const currentDateStr = new Date().toISOString();
@@ -119,18 +114,24 @@ Hôm nay là ngày: ${currentDateStr}.
 Danh sách nhân sự trong dự án:
 ${membersContext || '(Không có thành viên nào)'}
 
-Nhiệm vụ: Hãy phân tích yêu cầu sau và thiết lập một bảng Kanban hoàn chỉnh:
+Các Cột (Lists) hiện đang có sẵn trong bảng Kanban:
+${existingListsContext || '(Chưa có cột nào)'}
+
+Nhiệm vụ: Hãy phân tích yêu cầu sau và thiết lập một danh sách các công việc (tasks):
 "${prompt}"
 
 Quy tắc bắt buộc:
-1. Tư duy hệ thống: Tự động break down thành các lớp (VD: Database, Backend API, Frontend UI, DevOps) nếu yêu cầu chung chung.
-2. Tạo tempId: Mỗi task BẮT BUỘC có 1 "tempId" duy nhất (vd: "task_1", "task_2").
-3. Thiết lập Component: Bắt buộc chọn đúng 1 trong các giá trị: Frontend, Backend, Database, DevOps, Design, Other.
-4. Thời gian (startDate, dueDate): Bắt đầu từ ngày hôm nay. Các task liên tiếp phải có ngày nối tiếp nhau hợp lý. Tính bằng định dạng ISO 8601.
-5. Story Points: Đánh giá độ khó theo dãy Fibonacci (1, 2, 3, 5, 8).
-6. Phụ thuộc (Dependencies) & ParentId: Dùng tempId để liên kết. Backend phải làm trước Frontend (Frontend block bởi Backend). Epic chứa Task.
-7. Phân công (Assignees): Đọc danh sách nhân sự (nếu có). Phân tích role và chức danh/chuyên môn để gán userId cho hợp lý. Nếu role là Developer mà chức danh là Backend thì giao việc Backend. Nếu thiếu thông tin, tự phán đoán logic nhất. Điền mảng các userId vào assignees. Trả về mảng rỗng nếu không có ai hợp.
-8. Trả về ngôn ngữ Tiếng Việt.`;
+1. Phân bổ Cột (listName): TUYỆT ĐỐI KHÔNG tạo các cột trạng thái mới (như Todo, In Progress, Done, Testing) nếu chúng hoặc các cột tương đương đã tồn tại trong danh sách có sẵn.
+   - Nếu dự án/tính năng NHỎ: Hãy điền listName bằng ĐÚNG tên cột đầu tiên có sẵn (Ví dụ: "Cần làm (To Do)").
+   - Nếu dự án LỚN (cần chia Module): Hãy tạo tên cột mới theo TÍNH NĂNG/MODULE (Ví dụ: "Module Thanh toán", "Module Đăng nhập") vào trường listName. Tuyệt đối không nhóm theo Backend/Frontend ở cấp độ cột.
+2. Tư duy hệ thống: Tự động break down thành các lớp (VD: Database, Backend API, Frontend UI, DevOps). Không dồn cục 10 task giống hệt nhau.
+3. Tạo tempId: Mỗi task BẮT BUỘC có 1 "tempId" duy nhất (vd: "task_1", "task_2").
+4. Thiết lập Component: Bắt buộc chọn đúng 1 trong các giá trị: Frontend, Backend, Database, DevOps, Design, Other.
+5. Thời gian (startDate, dueDate): Bắt đầu từ ngày hôm nay. Các task liên tiếp phải có ngày nối tiếp nhau hợp lý. Tính bằng định dạng ISO 8601.
+6. Story Points: Đánh giá độ khó theo dãy Fibonacci (1, 2, 3, 5, 8).
+7. Phụ thuộc (Dependencies) & ParentId: Dùng tempId để liên kết. Backend phải làm trước Frontend (Frontend block bởi Backend). Epic chứa Task.
+8. Phân công (Assignees): Đọc danh sách nhân sự (nếu có). Phân tích role và chức danh/chuyên môn để gán userId cho hợp lý. Nếu role là Developer mà chức danh là Backend thì giao việc Backend. Điền mảng các userId vào assignees. Trả về mảng rỗng nếu không có ai hợp.
+9. Trả về ngôn ngữ Tiếng Việt.`;
 
         let result;
         let text = "";
@@ -143,7 +144,7 @@ Quy tắc bắt buộc:
                 break; // Thành công thì thoát vòng lặp
             } catch (error: any) {
                 if (error.message?.includes('503') && retries > 1) {
-                    console.log(\`Gemini API 503 Error. Đang thử lại... (\${retries - 1} lần thử còn lại)\`);
+                    console.log(`Gemini API 503 Error. Đang thử lại... (${retries - 1} lần thử còn lại)`);
                     await new Promise(resolve => setTimeout(resolve, 2000)); // Đợi 2 giây
                     retries--;
                 } else {
@@ -162,37 +163,58 @@ Quy tắc bắt buộc:
             throw new AppError(500, 'AI trả về định dạng không hợp lệ');
         }
 
-        // Lấy order cao nhất hiện tại của list trong board này
-        const lastList = await List.findOne({ boardId }).sort('-order');
-        let currentListOrder = lastList ? lastList.order + 1000 : 1000;
-
         try {
             let createdCount = 0;
+            let createdListCount = 0;
             const tempIdMap = new Map<string, mongoose.Types.ObjectId>();
             const tasksWithDependencies: any[] = [];
             
-            // Pass 1: Tạo Lists và Insert Tasks
-            for (const listData of aiData.lists) {
-                const newList = await List.create([{
-                    title: listData.title,
-                    boardId: boardId,
-                    order: currentListOrder
-                }]);
+            // Map để cache các Cột (tránh chọc DB nhiều lần)
+            // Lưu dưới dạng: "cần làm (to do)" -> ObjectId
+            const listNameMap = new Map<string, mongoose.Types.ObjectId>();
+            existingLists.forEach(l => {
+                if (l.title) listNameMap.set(l.title.toLowerCase().trim(), l._id);
+            });
 
-                currentListOrder += 1000;
-                let currentTaskOrder = 1000;
+            // Lấy order cao nhất hiện tại của list trong board này
+            const lastList = await List.findOne({ boardId }).sort('-order');
+            let currentListOrder = lastList ? lastList.order + 1000 : 1000;
+            let currentTaskOrder = 1000;
 
-                if (listData.tasks && listData.tasks.length > 0) {
-                    const validPriorities = ['Low', 'Medium', 'High'];
-                    const validTypes = ['Task', 'Feature', 'Bug', 'Chore', 'Epic'];
-                    const validComponents = ['Frontend', 'Backend', 'Database', 'DevOps', 'Design', 'Other'];
+            if (aiData.tasks && aiData.tasks.length > 0) {
+                const validPriorities = ['Low', 'Medium', 'High'];
+                const validTypes = ['Task', 'Feature', 'Bug', 'Chore', 'Epic'];
+                const validComponents = ['Frontend', 'Backend', 'Database', 'DevOps', 'Design', 'Other'];
 
-                    const tasksToCreate = listData.tasks.map((task: any) => ({
+                // Tìm và tạo List trước
+                for (const taskData of aiData.tasks) {
+                    const lName = (taskData.listName || 'Cần làm (To Do)').trim();
+                    const lNameLower = lName.toLowerCase();
+                    
+                    if (!listNameMap.has(lNameLower)) {
+                        // Tạo list mới
+                        const newList = await List.create({
+                            title: lName,
+                            boardId: boardId,
+                            order: currentListOrder
+                        });
+                        listNameMap.set(lNameLower, newList._id);
+                        currentListOrder += 1000;
+                        createdListCount++;
+                    }
+                }
+
+                // Chuan bi danh sach tasks
+                const tasksToCreate = aiData.tasks.map((task: any) => {
+                    const lNameLower = (task.listName || 'Cần làm (To Do)').trim().toLowerCase();
+                    const listId = listNameMap.get(lNameLower);
+                    
+                    return {
                         title: task.title,
                         description: task.description,
                         priority: validPriorities.includes(task.priority) ? task.priority : 'Medium',
                         type: validTypes.includes(task.type) ? task.type : 'Task',
-                        listId: newList[0]._id,
+                        listId: listId,
                         boardId: boardId,
                         order: currentTaskOrder += 1000,
                         component: validComponents.includes(task.component) ? task.component : undefined,
@@ -204,26 +226,26 @@ Quy tắc bắt buộc:
                         _tempId: task.tempId,
                         _tempParentId: task.parentId,
                         _tempDependencies: task.dependencies
-                    }));
+                    };
+                });
 
-                    const insertedTasks = await Task.insertMany(tasksToCreate);
-                    createdCount += insertedTasks.length;
+                const insertedTasks = await Task.insertMany(tasksToCreate);
+                createdCount += insertedTasks.length;
 
-                    // Build Map and collect dependencies
-                    insertedTasks.forEach((t: any, index: number) => {
-                        const originalTask = tasksToCreate[index];
-                        if (originalTask._tempId) {
-                            tempIdMap.set(originalTask._tempId, t._id);
-                        }
-                        if (originalTask._tempParentId || (originalTask._tempDependencies && originalTask._tempDependencies.length > 0)) {
-                            tasksWithDependencies.push({
-                                taskId: t._id,
-                                tempParentId: originalTask._tempParentId,
-                                tempDependencies: originalTask._tempDependencies
-                            });
-                        }
-                    });
-                }
+                // Build Map and collect dependencies
+                insertedTasks.forEach((t: any, index: number) => {
+                    const originalTask = tasksToCreate[index];
+                    if (originalTask._tempId) {
+                        tempIdMap.set(originalTask._tempId, t._id);
+                    }
+                    if (originalTask._tempParentId || (originalTask._tempDependencies && originalTask._tempDependencies.length > 0)) {
+                        tasksWithDependencies.push({
+                            taskId: t._id,
+                            tempParentId: originalTask._tempParentId,
+                            tempDependencies: originalTask._tempDependencies
+                        });
+                    }
+                });
             }
             
             // Pass 2: Bulk Update ParentId and Dependencies
@@ -256,7 +278,7 @@ Quy tắc bắt buộc:
 
             res.status(200).json({
                 status: 'success',
-                message: `Đã tạo thành công ${aiData.lists.length} Cột và ${createdCount} Công việc`,
+                message: `Đã tạo ${createdListCount} Cột mới và ${createdCount} Công việc`,
             });
         } catch (error) {
             throw error;
