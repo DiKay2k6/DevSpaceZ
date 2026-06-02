@@ -17,7 +17,7 @@ export const chatWithAI = async (req: Request, res: Response) => {
             throw new AppError(400, 'Prompt là bắt buộc');
         }
 
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
         const systemPrompt = `Bạn là DevSpaceZ Copilot - một trợ lý AI thông minh chuyên hỗ trợ quản lý dự án, DevOps và lập trình viên. 
         Hãy trả lời các câu hỏi ngắn gọn, rõ ràng, và hữu ích nhất có thể. Format bằng Markdown.`;
@@ -59,7 +59,7 @@ export const generateKanbanTasks = async (req: Request, res: Response) => {
         }
 
         const model = genAI.getGenerativeModel({ 
-            model: 'gemini-1.5-flash',
+            model: 'gemini-2.5-flash',
             generationConfig: {
                 responseMimeType: 'application/json',
                 responseSchema: {
