@@ -175,6 +175,7 @@ export const TaskCardComponent: React.FC<Props> = ({ task, index, onClick, onDel
 
                                 return (
                                     <img 
+                                        crossOrigin="anonymous"
                                         key={userIdStr || Math.random()}
                                         src={avatar} 
                                         alt={displayName}

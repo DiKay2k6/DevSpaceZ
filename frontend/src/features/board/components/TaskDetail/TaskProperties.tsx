@@ -201,6 +201,7 @@ export const TaskProperties: React.FC<TaskPropertiesProps> = ({
                             return (
                                 <div key={userIdStr || Math.random()} className="flex items-center gap-1.5 bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/10 pl-1 pr-2 py-1 rounded-full shadow-sm group">
                                     <img 
+                                        crossOrigin="anonymous"
                                         src={avatar} 
                                         alt={displayName} 
                                         className="w-5 h-5 rounded-full object-cover"
@@ -270,6 +271,7 @@ export const TaskProperties: React.FC<TaskPropertiesProps> = ({
                                             >
                                                 <div className="flex items-center gap-2.5">
                                                     <img 
+                                                        crossOrigin="anonymous"
                                                         src={member.avatar_url ? member.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(member.full_name || 'User')}&background=6366f1&color=fff`} 
                                                         alt="Avatar" 
                                                         className="w-6 h-6 rounded-full object-cover"

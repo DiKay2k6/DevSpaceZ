@@ -48,6 +48,7 @@ export const TaskComments: React.FC<TaskCommentsProps> = ({
                     comments.map(comment => (
                         <div key={comment._id} className="flex gap-3 group">
                             <img 
+                                crossOrigin="anonymous"
                                 src={comment.userId?.avatar_url ? comment.userId.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.userId?.full_name || 'User')}&background=6366f1&color=fff`} 
                                 alt={comment.userId?.full_name || 'User'} 
                                 className="w-9 h-9 rounded-2xl object-cover shrink-0 ring-2 ring-white dark:ring-[#151A26] shadow-sm"
@@ -132,6 +133,7 @@ export const TaskComments: React.FC<TaskCommentsProps> = ({
                                     className="flex items-center gap-2.5 px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer transition-colors"
                                 >
                                     <img 
+                                        crossOrigin="anonymous"
                                         src={member.avatar_url ? member.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(member.full_name || 'User')}&background=6366f1&color=fff`} 
                                         alt="Avatar" 
                                         className="w-6 h-6 rounded-full object-cover"

@@ -156,7 +156,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ board, onTaskClick, onUpdate
                                 {node.assignees.map((a: any, i) => {
                                     const avatarUrl = a.avatar_url ? a.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(a.full_name || 'User')}`;
                                     return (
-                                        <img key={i} src={avatarUrl} className="w-6 h-6 rounded-full border-2 border-white dark:border-[#0B0F19]" title={a.full_name} />
+                                        <img crossOrigin="anonymous" key={i} src={avatarUrl} className="w-6 h-6 rounded-full border-2 border-white dark:border-[#0B0F19]" title={a.full_name} />
                                     );
                                 })}
                             </div>

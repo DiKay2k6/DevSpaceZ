@@ -185,6 +185,7 @@ export const BoardHeader: React.FC<Props> = ({
                                 style={{ zIndex: isSelected ? 20 : 10 - index }}
                             >
                                 <img 
+                                    crossOrigin="anonymous"
                                     src={member.avatar_url ? member.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(member.full_name)}&background=6366f1&color=fff`} 
                                     alt={member.full_name} 
                                     className="w-7 h-7 rounded-full border border-white dark:border-[#111520] object-cover shadow-sm"
