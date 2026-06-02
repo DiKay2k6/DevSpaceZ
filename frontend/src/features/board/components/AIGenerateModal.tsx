@@ -28,7 +28,7 @@ export const AIGenerateModal: React.FC<Props> = ({ isOpen, onClose, boardId }) =
         try {
             setIsGenerating(true);
             const res = await aiApi.generateBoardTasks(boardId, prompt);
-            toast.success(res.data.message || 'Tạo Tasks thành công!');
+            toast.success(res.message || 'Tạo Tasks thành công!');
             
             // Re-fetch board data
             queryClient.invalidateQueries({ queryKey: ['board', boardId] });
