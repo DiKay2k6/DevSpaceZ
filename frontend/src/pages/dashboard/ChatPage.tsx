@@ -4,10 +4,11 @@ import { useBoards } from '@/features/board/hooks/useBoards';
 import { useOrganizationStore } from '@/entities/organization/model/organizationStore';
 import { chatApi } from '@/features/chat/api/chat.api';
 import { useChat } from '@/features/chat/hooks/useChat';
-import { Search, Hash, MessageSquare, Send, Image as ImageIcon, FileVideo, Loader2, User as UserIcon } from 'lucide-react';
+import { Search, Hash, MessageSquare, Send, Image as ImageIcon, FileVideo, Loader2, User as UserIcon, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { useNavigate } from 'react-router-dom';
 
 interface Conversation {
     _id: string;
@@ -23,6 +24,7 @@ export const ChatPage: React.FC = () => {
     const { user } = useAuthStore();
     const { currentOrganization } = useOrganizationStore();
     const { data: boards } = useBoards(currentOrganization?._id);
+    const navigate = useNavigate();
     
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [activeTab, setActiveTab] = useState<'boards' | 'direct'>('boards');
@@ -176,15 +178,23 @@ export const ChatPage: React.FC = () => {
     };
 
     return (
-        <div className="absolute inset-0 bg-white dark:bg-[#0B0F19] flex">
+        <div className="h-screen w-screen bg-white dark:bg-[#0B0F19] flex overflow-hidden">
             {/* Cột trái: Sidebar Chat */}
-            <div className="w-[320px] md:w-[380px] border-r border-slate-200 dark:border-white/10 flex flex-col bg-slate-50/50 dark:bg-transparent">
+            <div className="w-[320px] md:w-[380px] border-r border-slate-200 dark:border-white/10 flex flex-col bg-slate-50/50 dark:bg-transparent h-full">
                 {/* Header Cột trái */}
-                <div className="h-16 flex items-center px-4 border-b border-slate-200 dark:border-white/10 shrink-0">
+                <div className="h-16 flex items-center justify-between px-4 border-b border-slate-200 dark:border-white/10 shrink-0">
                     <h2 className="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
                         <MessageSquare size={24} className="text-blue-500" />
                         Tin nhắn
                     </h2>
+                    <button 
+                        onClick={() => navigate('/dashboard')}
+                        className="p-2 text-slate-500 hover:bg-slate-200 dark:hover:bg-white/10 rounded-lg transition-colors flex items-center gap-1"
+                        title="Quay lại Dashboard"
+                    >
+                        <ArrowLeft size={18} />
+                        <span className="text-xs font-medium hidden md:block">Quay lại</span>
+                    </button>
                 </div>
 
                 <div className="p-4 pb-2">

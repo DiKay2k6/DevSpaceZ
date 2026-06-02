@@ -138,13 +138,15 @@ const App: React.FC = () => {
                 <Route path="monitor" element={<DockerMonitor />} />
                 <Route path="team" element={<Team />} />
                 <Route path="docs" element={<DashboardDocs />} />
-                <Route path="chat" element={<ChatPage />} />
                 <Route path="board/:id" element={<KanbanBoard />} />
                 <Route path="analytics" element={<DashboardAnalytics />} />
               </Route>
 
               {/* Tách IDE ra khỏi DashboardLayout để Full-screen */}
               <Route path="/ide" element={<FullPageIDE />} />
+
+              {/* Tách Chat ra khỏi DashboardLayout để Full-screen */}
+              <Route path="/dashboard/chat" element={<ChatPage />} />
 
               {/* NHÓM 3.5: Trang Cài đặt - Full page layout, không bị kẹp bởi Dashboard Sidebar */}
               <Route path="/dashboard/settings" element={<SettingsLayout />}>
