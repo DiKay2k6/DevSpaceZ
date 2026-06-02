@@ -111,7 +111,7 @@ export const generateKanbanTasks = async (req: Request, res: Response) => {
         // Prepare context data
         const currentDateStr = new Date().toISOString();
         const membersContext = workspaceMembers.map((m: any) => 
-            `- ID: ${m.userId?._id || m.userId}, Tên: ${m.full_name || m.userId?.full_name}, Vai trò (Role): ${m.role}, Chức danh/Chuyên môn: ${m.title || 'Không rõ'}`
+            `- ID: ${m._id || m.userId?._id || m.userId}, Tên: ${m.full_name || m.userId?.full_name}, Vai trò (Role): ${m.role}, Chức danh/Chuyên môn: ${m.obsTitle || m.title || 'Không rõ'}`
         ).join('\n');
 
         const promptText = `Bạn là một Senior Technical Project Manager và Agile Coach. 
@@ -199,7 +199,7 @@ Quy tắc bắt buộc:
                         storyPoints: task.storyPoints,
                         startDate: task.startDate ? new Date(task.startDate) : undefined,
                         dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
-                        assignees: task.assignees || [],
+                        assignees: (task.assignees || []).filter((id: any) => mongoose.Types.ObjectId.isValid(id)),
                         // Temp fields to resolve later
                         _tempId: task.tempId,
                         _tempParentId: task.parentId,
