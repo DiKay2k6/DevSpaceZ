@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/shared/utils/avatar";
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { X, Users, Search, Trash2, Shield, Loader2, Plus, Star } from 'lucide-react';
@@ -180,7 +181,7 @@ export const SubTeamManagementModal: React.FC<Props> = ({ isOpen, onClose, subTe
                                             <div key={member.userId?._id} className="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-white/5">
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-xs font-bold shrink-0">
-                                                        {member.userId?.avatar_url ? <img src={member.userId.avatar_url} className="w-full h-full rounded-full object-cover" /> : member.userId?.full_name?.substring(0,2).toUpperCase()}
+                                                        {member.userId?.avatar_url ? <img src={member.userId.avatar_url ? getAvatarUrl(member.userId.avatar_url) : ""} className="w-full h-full rounded-full object-cover" /> : member.userId?.full_name?.substring(0,2).toUpperCase()}
                                                     </div>
                                                     <div className="text-sm">
                                                         <p className="font-semibold text-slate-800 dark:text-white">{member.userId?.full_name}</p>
@@ -208,7 +209,7 @@ export const SubTeamManagementModal: React.FC<Props> = ({ isOpen, onClose, subTe
                                 <div key={member.userId?._id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-white/[0.02] rounded-xl border border-slate-100 dark:border-white/5">
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-sm font-bold shrink-0">
-                                            {member.userId?.avatar_url ? <img src={member.userId.avatar_url} className="w-full h-full rounded-full object-cover" /> : member.userId?.full_name?.substring(0,2).toUpperCase()}
+                                            {member.userId?.avatar_url ? <img src={member.userId.avatar_url ? getAvatarUrl(member.userId.avatar_url) : ""} className="w-full h-full rounded-full object-cover" /> : member.userId?.full_name?.substring(0,2).toUpperCase()}
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-2">

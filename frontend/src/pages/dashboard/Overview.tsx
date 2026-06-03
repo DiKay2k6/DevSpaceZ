@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/shared/utils/avatar";
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '@/entities/user/model/authStore';
 import { useBoards, BOARD_KEYS } from '@/features/board/hooks/useBoards';
@@ -254,7 +255,7 @@ export const Overview: React.FC = () => {
                                     <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold shrink-0">
                                         {activity.userId?.avatar_url ? (
                                             <img 
-                                                src={activity.userId.avatar_url} 
+                                                src={activity.userId.avatar_url ? getAvatarUrl(activity.userId.avatar_url) : ""} 
                                                 alt="Avatar" 
                                                 className="w-full h-full rounded-full object-cover" 
                                                 referrerPolicy="no-referrer"

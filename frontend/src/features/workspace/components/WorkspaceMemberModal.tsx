@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/shared/utils/avatar";
 import React, { useState } from 'react';
 import { X, UserPlus, Users, Trash2, Edit2, Loader2, Check, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -218,7 +219,7 @@ export const WorkspaceMemberModal: React.FC<Props> = ({ isOpen, onClose, workspa
                                                     }
                                                 }}
                                             >
-                                                {member.userId?.avatar_url ? <img src={member.userId.avatar_url} alt="avt" className="w-full h-full rounded-full object-cover" crossOrigin="anonymous" /> : member.userId?.full_name?.substring(0,2) || '??'}
+                                                {member.userId?.avatar_url ? <img src={member.userId.avatar_url ? getAvatarUrl(member.userId.avatar_url) : ""} alt="avt" className="w-full h-full rounded-full object-cover" crossOrigin="anonymous" /> : member.userId?.full_name?.substring(0,2) || '??'}
                                             </div>
                                             <div>
                                                 <div className="flex items-center gap-2">
@@ -329,7 +330,7 @@ export const WorkspaceMemberModal: React.FC<Props> = ({ isOpen, onClose, workspa
                                                     }
                                                 }}
                                             >
-                                                {member.userId?.avatar_url ? <img src={member.userId.avatar_url} alt="avt" className="w-full h-full rounded-full object-cover" crossOrigin="anonymous" /> : member.userId?.full_name?.substring(0,2) || '??'}
+                                                {member.userId?.avatar_url ? <img src={member.userId.avatar_url ? getAvatarUrl(member.userId.avatar_url) : ""} alt="avt" className="w-full h-full rounded-full object-cover" crossOrigin="anonymous" /> : member.userId?.full_name?.substring(0,2) || '??'}
                                             </div>
                                             <div>
                                                 <p className="font-bold text-sm text-slate-800 dark:text-white">{member.userId?.full_name || 'Người dùng đã xóa'}</p>

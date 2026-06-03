@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/shared/utils/avatar";
 import React, { useState } from 'react';
 import { X, Users, Check, Search } from 'lucide-react';
 import { Button } from '@/shared/ui/Button';
@@ -122,7 +123,7 @@ export const CreateSubTeamModal: React.FC<CreateSubTeamModalProps> = ({
                                             <div className="flex items-center gap-3">
                                                 <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold shrink-0">
                                                     {member.userId.avatar_url ? (
-                                                        <img src={member.userId.avatar_url} alt="Avatar" className="w-full h-full rounded-full object-cover" />
+                                                        <img src={member.userId.avatar_url ? getAvatarUrl(member.userId.avatar_url) : ""} alt="Avatar" className="w-full h-full rounded-full object-cover" />
                                                     ) : (
                                                         getInitials(member.userId.full_name)
                                                     )}

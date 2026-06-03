@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/shared/utils/avatar";
 import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -49,7 +50,7 @@ export const TaskComments: React.FC<TaskCommentsProps> = ({
                         <div key={comment._id} className="flex gap-3 group">
                             <img 
                                 crossOrigin="anonymous"
-                                src={comment.userId?.avatar_url ? comment.userId.avatar_url : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(comment.userId?.full_name || 'User')}&backgroundColor=6366f1&textColor=ffffff`} 
+                                src={comment.userId?.avatar_url ? getAvatarUrl(comment.userId.avatar_url) : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(comment.userId?.full_name || 'User')}&backgroundColor=6366f1&textColor=ffffff`} 
                                 alt={comment.userId?.full_name || 'User'} 
                                 className="w-9 h-9 rounded-2xl object-cover shrink-0 ring-2 ring-white dark:ring-[#151A26] shadow-sm"
                             />
@@ -134,7 +135,7 @@ export const TaskComments: React.FC<TaskCommentsProps> = ({
                                 >
                                     <img 
                                         crossOrigin="anonymous"
-                                        src={member.avatar_url ? member.avatar_url : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(member.full_name || 'User')}&backgroundColor=6366f1&textColor=ffffff`} 
+                                        src={member.avatar_url ? getAvatarUrl(member.avatar_url) : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(member.full_name || 'User')}&backgroundColor=6366f1&textColor=ffffff`} 
                                         alt="Avatar" 
                                         className="w-6 h-6 rounded-full object-cover"
                                     />

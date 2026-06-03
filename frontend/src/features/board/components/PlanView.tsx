@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/shared/utils/avatar";
 import React, { useState, useMemo } from 'react';
 import { Board, Task } from '@/features/board/api/board.api';
 import { ChevronRight, ChevronDown, Plus, LayoutList, CheckCircle2, Circle, AlertCircle, Clock, Search, Filter } from 'lucide-react';
@@ -156,7 +157,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ board, onTaskClick, onUpdate
                         {node.assignees && node.assignees.length > 0 ? (
                             <div className="flex -space-x-2">
                                 {node.assignees.map((a: any, i) => {
-                                    const avatarUrl = a.avatar_url ? a.avatar_url : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(a.full_name || 'User')}&backgroundColor=6366f1&textColor=ffffff`;
+                                    const avatarUrl = a.avatar_url ? getAvatarUrl(a.avatar_url) : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(a.full_name || 'User')}&backgroundColor=6366f1&textColor=ffffff`;
                                     return (
                                         <img 
                                             crossOrigin="anonymous" 

@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/shared/utils/avatar";
 import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
@@ -71,7 +72,7 @@ export const SettingsLayout: React.FC = () => {
     }, [logout, navigate]);
 
     const initials  = user?.full_name?.charAt(0).toUpperCase() ?? 'U';
-    const avatarSrc = user?.avatar_url ? user.avatar_url : null;
+    const avatarSrc = user?.avatar_url ? getAvatarUrl(user.avatar_url) : null;
     const roleLabel = user?.specialization ?? user?.role ?? '';
 
     return (

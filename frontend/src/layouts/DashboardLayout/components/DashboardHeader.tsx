@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/shared/utils/avatar";
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell, Menu, User, LogOut, ChevronDown, LogIn, Home } from 'lucide-react';
@@ -76,7 +77,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ toggleCollapse
                         <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-inner overflow-hidden ${isAuthenticated && !user?.avatar_url ? 'bg-gradient-to-tr from-blue-600 to-purple-600' : 'bg-slate-400 dark:bg-slate-600'}`}>
                             {user?.avatar_url ? (
                                 <img 
-                                    src={user.avatar_url} 
+                                    src={user.avatar_url ? getAvatarUrl(user.avatar_url) : ""} 
                                     alt="Avatar" 
                                     className="w-full h-full object-cover" 
                                     referrerPolicy="no-referrer"

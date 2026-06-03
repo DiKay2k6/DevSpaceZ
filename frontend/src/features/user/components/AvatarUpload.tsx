@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/shared/utils/avatar";
 import React, { useRef, useState } from 'react';
 import { Upload, Camera, Trash2, CheckCircle2 } from 'lucide-react';
 import { useAuthStore } from '@/entities/user/model/authStore';
@@ -70,7 +71,7 @@ export const AvatarUpload: React.FC = () => {
                     ) : user?.avatar_url ? (
                         <>
                             <img 
-                                src={user.avatar_url} 
+                                src={user.avatar_url ? getAvatarUrl(user.avatar_url) : ""} 
                                 alt="Avatar" 
                                 className="w-full h-full object-cover absolute inset-0 z-10" 
                                 referrerPolicy="no-referrer"

@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/shared/utils/avatar";
 import React from 'react';
 import { Users, UserPlus, MoreVertical, Mail, Trash2, Shield, Loader2, Edit2, Check, X, Flame, AlertCircle, Plus, Search } from 'lucide-react';
 import { Button } from '@/shared/ui/Button';
@@ -137,7 +138,7 @@ export const Team: React.FC = () => {
                                                 className="w-10 h-10 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center font-bold uppercase shrink-0 cursor-pointer hover:scale-105 transition-transform"
                                                 onClick={() => openProfile(u._id)}
                                             >
-                                                {u.avatar_url ? <img src={u.avatar_url} alt="avt" className="w-full h-full rounded-full object-cover" crossOrigin="anonymous" /> : u.full_name?.substring(0, 2) || '??'}
+                                                {u.avatar_url ? <img src={u.avatar_url ? getAvatarUrl(u.avatar_url) : ""} alt="avt" className="w-full h-full rounded-full object-cover" crossOrigin="anonymous" /> : u.full_name?.substring(0, 2) || '??'}
                                             </div>
                                             <div>
                                                 <p className="font-bold text-sm text-slate-800 dark:text-white">{u.full_name}</p>
@@ -170,7 +171,7 @@ export const Team: React.FC = () => {
                                             className="w-12 h-12 bg-white dark:bg-[#1A202C] text-slate-600 rounded-full flex items-center justify-center font-bold uppercase shrink-0 shadow-sm cursor-pointer hover:scale-105 transition-transform"
                                             onClick={() => openProfile(c._id)}
                                         >
-                                            {c.avatar_url ? <img src={c.avatar_url} alt="avt" className="w-full h-full rounded-full object-cover" crossOrigin="anonymous" /> : c.full_name?.substring(0, 2) || '??'}
+                                            {c.avatar_url ? <img src={c.avatar_url ? getAvatarUrl(c.avatar_url) : ""} alt="avt" className="w-full h-full rounded-full object-cover" crossOrigin="anonymous" /> : c.full_name?.substring(0, 2) || '??'}
                                         </div>
                                         <div>
                                             <p className="font-bold text-sm text-slate-800 dark:text-white">{c.full_name}</p>
@@ -320,7 +321,7 @@ export const Team: React.FC = () => {
                                                             onClick={() => openProfile(member.userId._id)}
                                                         >
                                                             {member.userId.avatar_url ? (
-                                                                <img src={member.userId.avatar_url} alt="avt" className="w-full h-full object-cover" crossOrigin="anonymous" />
+                                                                <img src={member.userId.avatar_url ? getAvatarUrl(member.userId.avatar_url) : ""} alt="avt" className="w-full h-full object-cover" crossOrigin="anonymous" />
                                                             ) : (
                                                                 getInitials(member.userId.full_name)
                                                             )}
@@ -514,7 +515,7 @@ export const Team: React.FC = () => {
                                                 }}
                                             >
                                                 {m.userId?.avatar_url ? (
-                                                    <img src={m.userId.avatar_url} alt="Avatar" className="w-full h-full object-cover" crossOrigin="anonymous" />
+                                                    <img src={m.userId.avatar_url ? getAvatarUrl(m.userId.avatar_url) : ""} alt="Avatar" className="w-full h-full object-cover" crossOrigin="anonymous" />
                                                 ) : (
                                                     getInitials(m.userId?.full_name || 'U')
                                                 )}

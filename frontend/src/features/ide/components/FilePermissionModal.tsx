@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/shared/utils/avatar";
 import React, { useEffect, useState } from 'react';
 import { X, Shield, Lock, EyeOff, Check, Loader2 } from 'lucide-react';
 import { createPortal } from 'react-dom';
@@ -127,7 +128,7 @@ export const FilePermissionModal: React.FC<Props> = ({ isOpen, onClose, workspac
                                         <div className="col-span-8 flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-full overflow-hidden shrink-0">
                                                 {member.userId.avatar_url ? (
-                                                    <img src={member.userId.avatar_url} alt="avt" className="w-full h-full object-cover" />
+                                                    <img src={member.userId.avatar_url ? getAvatarUrl(member.userId.avatar_url) : ""} alt="avt" className="w-full h-full object-cover" />
                                                 ) : (
                                                     <div className="w-full h-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-xs">
                                                         {member.userId.full_name?.substring(0, 2)}

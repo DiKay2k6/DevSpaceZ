@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/shared/utils/avatar";
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuthStore } from '@/entities/user/model/authStore';
 import { useBoards } from '@/features/board/hooks/useBoards';
@@ -180,7 +181,7 @@ export const ChatPage: React.FC = () => {
                 >
                     <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
                         {otherUser.avatar_url ? (
-                            <img src={otherUser.avatar_url} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            <img src={otherUser.avatar_url ? getAvatarUrl(otherUser.avatar_url) : ""} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         ) : (
                             <span className="font-bold text-slate-500 dark:text-slate-400">{getInitials(otherUser.full_name)}</span>
                         )}
@@ -318,7 +319,7 @@ export const ChatPage: React.FC = () => {
                                                 {!isMe && (
                                                     <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold overflow-hidden shadow-sm">
                                                         {msg.senderId.avatar_url ? (
-                                                            <img src={msg.senderId.avatar_url} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display='none'; const fb = e.currentTarget.nextElementSibling as HTMLElement; if (fb) fb.style.display='flex'; }}/>
+                                                            <img src={msg.senderId.avatar_url ? getAvatarUrl(msg.senderId.avatar_url) : ""} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display='none'; const fb = e.currentTarget.nextElementSibling as HTMLElement; if (fb) fb.style.display='flex'; }}/>
                                                         ) : null}
                                                         <div className={`w-full h-full items-center justify-center ${msg.senderId.avatar_url ? 'hidden' : 'flex'}`}>
                                                             {getInitials(msg.senderId.full_name)}

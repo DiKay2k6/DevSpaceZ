@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/shared/utils/avatar";
 import React, { useState } from 'react';
 import { User, CheckSquare, X } from 'lucide-react';
 import { Task } from '@/features/board/api/board.api';
@@ -272,7 +273,7 @@ export const TaskProperties: React.FC<TaskPropertiesProps> = ({
                                                 <div className="flex items-center gap-2.5">
                                                     <img 
                                                         crossOrigin="anonymous"
-                                                        src={member.avatar_url ? member.avatar_url : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(member.full_name || 'User')}&backgroundColor=6366f1&textColor=ffffff`} 
+                                                        src={member.avatar_url ? getAvatarUrl(member.avatar_url) : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(member.full_name || 'User')}&backgroundColor=6366f1&textColor=ffffff`} 
                                                         alt="Avatar" 
                                                         className="w-6 h-6 rounded-full object-cover"
                                                     />

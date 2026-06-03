@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/shared/utils/avatar";
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useScrollVisibility } from '@/hooks/useScrollVisibility';
@@ -71,7 +72,7 @@ export const Navbar: React.FC = () => {
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-inner overflow-hidden ${!user.avatar_url ? 'bg-gradient-to-tr from-blue-600 to-purple-600' : 'bg-slate-400 dark:bg-slate-600'}`}>
                                         {user.avatar_url ? (
                                             <img 
-                                                src={user.avatar_url} 
+                                                src={user.avatar_url ? getAvatarUrl(user.avatar_url) : ""} 
                                                 alt="Avatar" 
                                                 className="w-full h-full object-cover" 
                                                 referrerPolicy="no-referrer"
