@@ -19,13 +19,8 @@ const verifyGitHubSignature = (req: Request) => {
     const signature = req.headers['x-hub-signature-256'] as string;
     if (!signature) return false;
 
-    // We need the raw body to verify signature. Express json parser usually parses it to an object.
-    // To verify signature, we need the exact raw string.
-    // If rawBody is not available, we stringify the parsed body (might cause mismatch due to spaces).
-    // A better way is using express.raw() or adding verify function to body-parser.
-    // For this enterprise implementation, assuming `req.rawBody` is attached (we will configure it in app.ts),
-    // or we use JSON.stringify(req.body) as a fallback (not 100% reliable for HMAC but okay for prototype).
-    const payload = (req as any).rawBody || JSON.stringify(req.body);
+    // req.body is now a Buffer because of express.raw() in git.routes.ts
+    const payload = req.body;
     
     const hmac = crypto.createHmac('sha256', GITHUB_WEBHOOK_SECRET);
     const digest = 'sha256=' + hmac.update(payload).digest('hex');
@@ -57,10 +52,20 @@ export const handleGitHubWebhook = async (req: Request, res: Response) => {
 
         // 2. We only care about push and pull_request events
         if (event === 'push' || event === 'pull_request') {
+            // Because we used express.raw(), req.body is a Buffer. We need to parse it to object
+            let parsedPayload: any = {};
+            try {
+                parsedPayload = JSON.parse(req.body.toString());
+            } catch (err) {
+                logger.error('Failed to parse webhook JSON payload');
+                res.status(400).send('Invalid JSON');
+                return;
+            }
+
             // Push to BullMQ
             await gitEventsQueue.add('process-github-event', {
                 event,
-                payload: req.body
+                payload: parsedPayload
             }, {
                 removeOnComplete: true, // Keep redis clean
                 removeOnFail: false,    // Keep failed jobs for debugging

@@ -64,6 +64,9 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter); // Áp dụng cho tất cả các route bắt đầu bằng /api
 
+// Đặc biệt: Webhook Route cần được nạp TRƯỚC express.json() để giữ nguyên chuỗi Byte gốc
+app.use('/api/v1/git', gitRoutes);
+
 // d. Body Parser & Cookie Parser
 app.use(express.json({ 
     limit: '5mb',
@@ -137,8 +140,6 @@ app.use('/api/v1/ide', ideRoutes);
 app.use('/api/v1/lsp', ideContainerRoutes);
 app.use('/api/v1/chat', chatRoutes);
 app.use('/api/v1/search', searchRoutes);
-app.use('/api/v1/git', gitRoutes);
-
 // Route kiểm tra sức khỏe hệ thống (Health Check)
 app.get('/api/v1/health', (req: Request, res: Response) => {
     res.status(200).json({ status: 'success', message: 'Hệ thống hoạt động bình thường!' });
