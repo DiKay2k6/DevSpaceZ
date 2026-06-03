@@ -58,9 +58,6 @@ export const KanbanBoard: React.FC = () => {
         setSelectedComponent,
         isFilterActive,
 
-        isCmdPaletteOpen,
-        setIsCmdPaletteOpen,
-
         onDragEnd,
         boardActions
     } = useKanbanLogic(id);

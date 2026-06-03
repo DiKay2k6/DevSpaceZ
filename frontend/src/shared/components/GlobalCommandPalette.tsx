@@ -17,7 +17,7 @@ export const GlobalCommandPalette: React.FC = () => {
     
     const navigate = useNavigate();
     const { openProfile } = useUserProfileStore();
-    const searchTimeout = useRef<NodeJS.Timeout | null>(null);
+    const searchTimeout = useRef<any>(null);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {

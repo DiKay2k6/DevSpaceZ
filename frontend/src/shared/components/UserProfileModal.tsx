@@ -77,7 +77,7 @@ export const UserProfileModal: React.FC = () => {
     if (!isOpen) return null;
 
     return (
-        <Modal isOpen={isOpen} onClose={closeProfile} title="Hồ sơ thành viên" size="md">
+        <Modal isOpen={isOpen} onClose={closeProfile} title="Hồ sơ thành viên">
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-12">
                     <Loader2 className="animate-spin text-blue-500 mb-2" size={32} />

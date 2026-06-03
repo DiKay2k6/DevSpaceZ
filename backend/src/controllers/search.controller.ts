@@ -29,18 +29,32 @@ export const searchController = {
 
             // 1. Xác định các workspace mà user có quyền truy cập
             let workspaceIds: mongoose.Types.ObjectId[] = [];
+            const userObjectId = new mongoose.Types.ObjectId(userId);
+
             if (orgId && orgId !== 'undefined' && orgId !== 'null') {
+                // Lấy tất cả các subteams mà user đang tham gia trong org này
+                const SubTeam = mongoose.model('SubTeam');
+                const userSubTeams = await SubTeam.find({
+                    organizationId: orgId,
+                    'members.userId': userId
+                }).lean();
+                const userSubTeamIds = userSubTeams.map((t: any) => t._id);
+
                 const workspaces = await Workspace.find({ 
                     organizationId: orgId,
                     $or: [
                         { 'members.userId': userId },
-                        // Giả định đơn giản, thực tế cần check quyền Owner/Manager, nhưng để demo tính năng thì tìm theo Org là được
+                        { ownerId: userId },
+                        { subTeamIds: { $in: userSubTeamIds } }
                     ]
                 }).lean();
                 workspaceIds = workspaces.map(w => w._id as mongoose.Types.ObjectId);
             } else {
                 const workspaces = await Workspace.find({ 
-                    'members.userId': userId
+                    $or: [
+                        { 'members.userId': userId },
+                        { ownerId: userId }
+                    ]
                 }).lean();
                 workspaceIds = workspaces.map(w => w._id as mongoose.Types.ObjectId);
             }

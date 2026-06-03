@@ -146,8 +146,19 @@ export const getUserProfile = asyncHandler(async (req: Request, res: Response) =
         throw new AppError('Không tìm thấy người dùng', 404);
     }
 
+    // Lấy danh sách subTeam của user
+    const SubTeam = mongoose.model('SubTeam');
+    const userSubTeams = await SubTeam.find({ 'members.userId': id }).lean();
+    const subTeamIds = userSubTeams.map(st => st._id);
+
     // Lấy danh sách các workspace mà user này tham gia
-    const workspaces = await Workspace.find({ 'members.userId': id }).lean();
+    const workspaces = await Workspace.find({ 
+        $or: [
+            { 'members.userId': id },
+            { ownerId: id },
+            { subTeamIds: { $in: subTeamIds } }
+        ]
+    }).lean();
     const workspaceIds = workspaces.map(w => w._id);
 
     // Lấy danh sách các project (board) thuộc các workspace đó

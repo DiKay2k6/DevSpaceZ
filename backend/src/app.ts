@@ -35,6 +35,7 @@ const app = express();
 // ============================================================================
 // 1. GLOBAL MIDDLEWARES (LỚP GIÁP BẢO VỆ)
 // ============================================================================
+app.set('trust proxy', 1); // Cần thiết khi deploy lên Render/Vercel (chạy sau Load Balancer)
 
 // a0. Request Logging
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -73,7 +74,7 @@ app.use('/uploads', express.static('public/uploads'));
 // f. Middleware thông minh tự động fallback avatar (Giải quyết triệt để 2 vấn đề Enterprise):
 // 1. Lỗi Caching Frontend: Frontend request URL cũ (đã bị xóa khi upload ảnh mới) -> Tự động Redirect sang URL mới.
 // 2. Lỗi Mất File: Ổ cứng Render Free tự động xóa file ảnh sau khi sleep -> Tự động Redirect sang Avatar chữ (Dicebear).
-app.use('/uploads/avatars/:filename', async (req: Request, res: Response) => {
+app.get('/uploads/avatars/:filename', async (req: Request, res: Response) => {
     try {
         const filename = req.params.filename as string;
         const match = filename.match(/^avatar_([a-fA-F0-9]{24})_/);

@@ -82,7 +82,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         set({ user: null, accessToken: null, isAuthenticated: false });
         localStorage.removeItem('organization-storage');
         // Chỉ reload/chuyển hướng nếu không phải đang ở trang auth
-        if (window.location.pathname !== '/auth') {
+        if (!window.location.pathname.startsWith('/auth')) {
             window.location.href = '/auth';
         }
     },
