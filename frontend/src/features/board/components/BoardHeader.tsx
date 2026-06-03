@@ -9,6 +9,7 @@ import { userApi } from '@/features/user/api/user.api';
 import { WorkspaceMemberModal } from '@/features/workspace/components/WorkspaceMemberModal';
 import { TaskRequestsDialog } from './TaskRequestsDialog';
 import { BOARD_KEYS } from '@/features/board/hooks/useBoards';
+import { useUserProfileStore } from '@/entities/user/model/userProfileStore';
 
 interface Props {
     board: Board;
@@ -40,6 +41,7 @@ export const BoardHeader: React.FC<Props> = ({
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const { user, updateUser } = useAuthStore();
+    const { openProfile } = useUserProfileStore();
     
     const isPinned = user?.pinned_boards?.includes(board._id);
 
@@ -179,9 +181,13 @@ export const BoardHeader: React.FC<Props> = ({
                         return (
                             <button
                                 key={member._id}
-                                onClick={() => toggleAssignee(member._id)}
+                                onClick={() => openProfile(member._id)}
+                                onContextMenu={(e) => {
+                                    e.preventDefault();
+                                    toggleAssignee(member._id);
+                                }}
                                 className={`relative rounded-full transition-all ${isSelected ? 'ring-2 ring-blue-500 ring-offset-1 dark:ring-offset-[#111520] z-20' : 'hover:-translate-y-0.5 opacity-70 hover:opacity-100 hover:z-20'} -ml-1.5 first:ml-0`}
-                                title={`Lọc theo ${member.full_name}`}
+                                title={`Nhấp xem hồ sơ, Chuột phải để lọc theo ${member.full_name}`}
                                 style={{ zIndex: isSelected ? 20 : 10 - index }}
                             >
                                 <img 

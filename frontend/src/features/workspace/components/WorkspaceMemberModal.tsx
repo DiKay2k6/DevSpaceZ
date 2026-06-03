@@ -11,6 +11,7 @@ import { handleApiError } from '@/shared/utils/error';
 import { createPortal } from 'react-dom';
 import { toast } from 'react-hot-toast';
 import { useRoles } from '@/features/organization/hooks/useRoles';
+import { useUserProfileStore } from '@/entities/user/model/userProfileStore';
 
 interface Props {
     isOpen: boolean;
@@ -22,6 +23,7 @@ interface Props {
 
 export const WorkspaceMemberModal: React.FC<Props> = ({ isOpen, onClose, workspaceId, currentUserRole = 'Member', orgId: propOrgId }) => {
     const { currentOrganization } = useOrganizationStore();
+    const { openProfile } = useUserProfileStore();
     const queryClient = useQueryClient();
     const [activeTab, setActiveTab] = useState<'manage' | 'add' | 'subteams'>('manage');
     const [editingUserId, setEditingUserId] = useState<string | null>(null);
@@ -207,8 +209,16 @@ export const WorkspaceMemberModal: React.FC<Props> = ({ isOpen, onClose, workspa
                                 validWsMembers.map((member: any) => (
                                     <div key={member._id} className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold uppercase shrink-0">
-                                                {member.userId?.avatar_url ? <img src={member.userId.avatar_url} alt="avt" className="w-full h-full rounded-full object-cover" /> : member.userId?.full_name?.substring(0,2) || '??'}
+                                            <div 
+                                                className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold uppercase shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                                                onClick={() => {
+                                                    if (member.userId?._id) {
+                                                        onClose();
+                                                        openProfile(member.userId._id);
+                                                    }
+                                                }}
+                                            >
+                                                {member.userId?.avatar_url ? <img src={member.userId.avatar_url} alt="avt" className="w-full h-full rounded-full object-cover" crossOrigin="anonymous" /> : member.userId?.full_name?.substring(0,2) || '??'}
                                             </div>
                                             <div>
                                                 <div className="flex items-center gap-2">
@@ -310,8 +320,16 @@ export const WorkspaceMemberModal: React.FC<Props> = ({ isOpen, onClose, workspa
                                 availableMembers.map((member: any) => (
                                     <div key={member._id} className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-white/10 hover:border-blue-300 transition-colors">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center font-bold uppercase shrink-0">
-                                                {member.userId?.avatar_url ? <img src={member.userId.avatar_url} alt="avt" className="w-full h-full rounded-full object-cover" /> : member.userId?.full_name?.substring(0,2) || '??'}
+                                            <div 
+                                                className="w-10 h-10 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center font-bold uppercase shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                                                onClick={() => {
+                                                    if (member.userId?._id) {
+                                                        onClose();
+                                                        openProfile(member.userId._id);
+                                                    }
+                                                }}
+                                            >
+                                                {member.userId?.avatar_url ? <img src={member.userId.avatar_url} alt="avt" className="w-full h-full rounded-full object-cover" crossOrigin="anonymous" /> : member.userId?.full_name?.substring(0,2) || '??'}
                                             </div>
                                             <div>
                                                 <p className="font-bold text-sm text-slate-800 dark:text-white">{member.userId?.full_name || 'Người dùng đã xóa'}</p>

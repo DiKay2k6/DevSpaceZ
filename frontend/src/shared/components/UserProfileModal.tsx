@@ -52,6 +52,7 @@ export const UserProfileModal: React.FC = () => {
             setData(res.data.data);
         } catch (error) {
             console.error(error);
+            setData(null);
         } finally {
             setLoading(false);
         }
@@ -158,7 +159,13 @@ export const UserProfileModal: React.FC = () => {
                         </Button>
                     )}
                 </div>
-            ) : null}
+            ) : (
+                <div className="flex flex-col items-center justify-center py-12">
+                    <AlertCircle className="text-red-500 mb-2" size={32} />
+                    <p className="text-slate-500 text-sm font-medium">Không thể tải thông tin hồ sơ.</p>
+                    <p className="text-slate-400 text-xs mt-1">Người dùng có thể đã bị xóa hoặc lỗi hệ thống.</p>
+                </div>
+            )}
         </Modal>
     );
 };
