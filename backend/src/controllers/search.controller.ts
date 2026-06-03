@@ -40,8 +40,7 @@ export const searchController = {
                 workspaceIds = workspaces.map(w => w._id as mongoose.Types.ObjectId);
             } else {
                 const workspaces = await Workspace.find({ 
-                    'members.userId': userId,
-                    organizationId: { $exists: false }
+                    'members.userId': userId
                 }).lean();
                 workspaceIds = workspaces.map(w => w._id as mongoose.Types.ObjectId);
             }
