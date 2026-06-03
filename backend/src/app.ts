@@ -45,7 +45,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // a. Helmet: Cấu hình các HTTP Headers bảo mật để chống lại các lỗ hổng web phổ biến
 app.use(helmet({
-    crossOriginResourcePolicy: { policy: "cross-origin" }
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginEmbedderPolicy: false
 }));
 
 app.use(cors({

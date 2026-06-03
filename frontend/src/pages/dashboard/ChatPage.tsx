@@ -29,15 +29,14 @@ export const ChatPage: React.FC = () => {
     const location = useLocation();
     
     const [conversations, setConversations] = useState<Conversation[]>([]);
-    const [activeTab, setActiveTab] = useState<'boards' | 'direct'>('boards');
     const [searchQuery, setSearchQuery] = useState('');
     
-    const [activeChatId, setActiveChatId] = useState<string | undefined>();
+    const [activeChat, setActiveChat] = useState<{ id?: string, type: 'boards' | 'direct' }>({ type: 'boards' });
     const [activeChatName, setActiveChatName] = useState<string>('');
     const [activeChatAvatar, setActiveChatAvatar] = useState<string | undefined>();
     
     // Khởi tạo Chat Hook
-    const { messages, loading, messagesEndRef, scrollToBottom } = useChat(activeChatId, activeTab === 'direct');
+    const { messages, loading, messagesEndRef, scrollToBottom } = useChat(activeChat.id, activeChat.type === 'direct');
     
     const [inputValue, setInputValue] = useState('');
     const [uploading, setUploading] = useState(false);
@@ -53,8 +52,7 @@ export const ChatPage: React.FC = () => {
 
                 // Check if we came from UserProfileModal
                 if (location.state?.conversationId) {
-                    setActiveTab('direct');
-                    setActiveChatId(location.state.conversationId);
+                    setActiveChat({ id: location.state.conversationId, type: 'direct' });
                     
                     // Find target user from conversation to set name and avatar
                     const conv = fetchedConversations.find((c: any) => c._id === location.state.conversationId);
@@ -80,13 +78,13 @@ export const ChatPage: React.FC = () => {
 
     const handleSendText = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!activeChatId || !inputValue.trim() || uploading) return;
+        if (!activeChat.id || !inputValue.trim() || uploading) return;
 
         const content = inputValue.trim();
         setInputValue('');
 
         try {
-            await chatApi.sendMessage(activeChatId, activeTab === 'direct', content);
+            await chatApi.sendMessage(activeChat.id, activeChat.type === 'direct', content);
             setTimeout(scrollToBottom, 100);
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Lỗi khi gửi tin nhắn');
@@ -96,7 +94,7 @@ export const ChatPage: React.FC = () => {
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file || !activeChatId) return;
+        if (!file || !activeChat.id) return;
 
         e.target.value = '';
 
@@ -110,7 +108,7 @@ export const ChatPage: React.FC = () => {
             const uploadRes = await chatApi.uploadMedia(file);
             const { url, mediaType } = uploadRes.data;
             
-            await chatApi.sendMessage(activeChatId, activeTab === 'direct', '', url, mediaType);
+            await chatApi.sendMessage(activeChat.id, activeChat.type === 'direct', '', url, mediaType);
             setTimeout(scrollToBottom, 100);
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Lỗi khi upload file');
@@ -120,7 +118,7 @@ export const ChatPage: React.FC = () => {
     };
 
     const renderSidebarList = () => {
-        if (activeTab === 'boards') {
+        if (activeChat.type === 'boards') {
             const filteredBoards = boards?.filter(b => b.title.toLowerCase().includes(searchQuery.toLowerCase()));
             if (!filteredBoards?.length) {
                 return <div className="p-4 text-center text-sm text-slate-500">Không tìm thấy dự án nào</div>;
@@ -129,12 +127,12 @@ export const ChatPage: React.FC = () => {
                 <button
                     key={board._id}
                     onClick={() => {
-                        setActiveChatId(board._id);
+                        setActiveChat({ id: board._id, type: 'boards' });
                         setActiveChatName(board.title);
                         setActiveChatAvatar(undefined);
                     }}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
-                        activeChatId === board._id 
+                        activeChat.id === board._id 
                         ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20' 
                         : 'hover:bg-slate-50 dark:hover:bg-white/5 border-transparent'
                     } border text-left mb-1`}
@@ -143,7 +141,7 @@ export const ChatPage: React.FC = () => {
                         <Hash size={20} />
                     </div>
                     <div className="flex-1 overflow-hidden">
-                        <h4 className={`font-semibold truncate ${activeChatId === board._id ? 'text-blue-700 dark:text-blue-400' : 'text-slate-800 dark:text-white'}`}>
+                        <h4 className={`font-semibold truncate ${activeChat.id === board._id ? 'text-blue-700 dark:text-blue-400' : 'text-slate-800 dark:text-white'}`}>
                             {board.title}
                         </h4>
                         <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Nhóm dự án</p>
@@ -169,12 +167,12 @@ export const ChatPage: React.FC = () => {
                 <button
                     key={conv._id}
                     onClick={() => {
-                        setActiveChatId(conv._id);
+                        setActiveChat({ id: conv._id, type: 'direct' });
                         setActiveChatName(otherUser.full_name);
                         setActiveChatAvatar(otherUser.avatar_url);
                     }}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
-                        activeChatId === conv._id 
+                        activeChat.id === conv._id 
                         ? 'bg-purple-50 dark:bg-purple-500/10 border-purple-200 dark:border-purple-500/20' 
                         : 'hover:bg-slate-50 dark:hover:bg-white/5 border-transparent'
                     } border text-left mb-1`}
@@ -187,7 +185,7 @@ export const ChatPage: React.FC = () => {
                         )}
                     </div>
                     <div className="flex-1 overflow-hidden">
-                        <h4 className={`font-semibold truncate ${activeChatId === conv._id ? 'text-purple-700 dark:text-purple-400' : 'text-slate-800 dark:text-white'}`}>
+                        <h4 className={`font-semibold truncate ${activeChat.id === conv._id ? 'text-purple-700 dark:text-purple-400' : 'text-slate-800 dark:text-white'}`}>
                             {otherUser.full_name}
                         </h4>
                         <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
@@ -234,17 +232,17 @@ export const ChatPage: React.FC = () => {
 
                 <div className="flex items-center px-4 mb-2">
                     <button
-                        onClick={() => setActiveTab('boards')}
+                        onClick={() => setActiveChat({ id: undefined, type: 'boards' })}
                         className={`flex-1 pb-2 text-sm font-semibold border-b-2 transition-colors ${
-                            activeTab === 'boards' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                            activeChat.type === 'boards' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                         }`}
                     >
                         Dự án
                     </button>
                     <button
-                        onClick={() => setActiveTab('direct')}
+                        onClick={() => setActiveChat({ id: undefined, type: 'direct' })}
                         className={`flex-1 pb-2 text-sm font-semibold border-b-2 transition-colors ${
-                            activeTab === 'direct' ? 'border-purple-500 text-purple-600 dark:text-purple-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                            activeChat.type === 'direct' ? 'border-purple-500 text-purple-600 dark:text-purple-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                         }`}
                     >
                         Cá nhân
@@ -259,7 +257,7 @@ export const ChatPage: React.FC = () => {
 
             {/* Cột phải: Khung Chat */}
             <div className="flex-1 flex flex-col relative bg-white dark:bg-[#0B0F19]">
-                {!activeChatId ? (
+                {!activeChat.id ? (
                     <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
                         <div className="w-24 h-24 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center mb-4 text-slate-300 dark:text-slate-600">
                             <MessageSquare size={48} />
@@ -273,9 +271,9 @@ export const ChatPage: React.FC = () => {
                         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-200 dark:border-white/10 shrink-0 bg-white dark:bg-[#111520] z-10 shadow-sm">
                             <div className="flex items-center gap-3">
                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white overflow-hidden shadow-inner ${
-                                    activeTab === 'boards' ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : 'bg-slate-200 dark:bg-slate-700'
+                                    activeChat.type === 'boards' ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : 'bg-slate-200 dark:bg-slate-700'
                                 }`}>
-                                    {activeTab === 'boards' ? (
+                                    {activeChat.type === 'boards' ? (
                                         <Hash size={20} />
                                     ) : activeChatAvatar ? (
                                         <img src={activeChatAvatar} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
