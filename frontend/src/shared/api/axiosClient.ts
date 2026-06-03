@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { tokenManager } from './tokenManager';
 
 // 1. Khởi tạo một instance của Axios với các cấu hình mặc định
 const axiosClient = axios.create({
@@ -33,10 +34,8 @@ const onRefreshFailed = (error: any) => {
 
 // 2. Can thiệp vào Request (Gửi đi)
 axiosClient.interceptors.request.use(
-    async (config) => {
-        // Tránh vòng lặp store import bằng dynamic import
-        const { useAuthStore } = await import('@/entities/user/model/authStore');
-        const accessToken = useAuthStore.getState().accessToken;
+    (config) => {
+        const accessToken = tokenManager.getToken();
         
         if (accessToken) {
             config.headers['Authorization'] = `Bearer ${accessToken}`;
@@ -56,7 +55,6 @@ axiosClient.interceptors.response.use(
         return response.data;
     },
     async (error) => {
-        const { useAuthStore } = await import('@/entities/user/model/authStore');
         const originalRequest = error.config;
 
         // Nếu API báo lỗi 401 (Unauthorized) và không phải request tới auth (để tránh lặp vô tận)
@@ -72,8 +70,8 @@ axiosClient.interceptors.response.use(
                         const response = await axios.post(`${baseURL}/auth/refresh-token`, {}, { withCredentials: true });
                         const newAccessToken = response.data.data.accessToken;
 
-                        // Lưu Token mới vào Zustand
-                        useAuthStore.getState().setAccessToken(newAccessToken);
+                        // Lưu Token mới
+                        tokenManager.setToken(newAccessToken);
                         
                         isRefreshing = false;
                         onRefreshed(newAccessToken);
@@ -85,7 +83,7 @@ axiosClient.interceptors.response.use(
                         isRefreshing = false;
                         
                         // Nếu Refresh Token cũng hết hạn -> Xóa session
-                        useAuthStore.getState().clearSession();
+                        tokenManager.clearSession();
                         
                         onRefreshFailed(refreshError); // Reject tất cả request đang đợi để mở khóa UI
                         

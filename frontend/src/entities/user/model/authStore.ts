@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { authApi, LoginPayload } from '@/features/auth/api/auth.api';
 import { handleApiError } from '@/shared/utils/error';
+import { tokenManager } from '@/shared/api/tokenManager';
 
 // 1. Định nghĩa kiểu dữ liệu cho User
 export interface User {
@@ -114,3 +115,10 @@ export const useAuthStore = create<AuthState>((set) => ({
         set({ accessToken: token });
     }
 }));
+
+// Bơm các hàm state từ authStore vào tokenManager để axiosClient có thể sử dụng mà không bị import vòng tròn
+tokenManager.inject(
+    () => useAuthStore.getState().accessToken,
+    (token: string) => useAuthStore.getState().setAccessToken(token),
+    () => useAuthStore.getState().clearSession()
+);
