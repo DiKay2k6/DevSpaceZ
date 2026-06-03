@@ -28,6 +28,7 @@ import aiRoutes from './routes/ai.routes';
 import searchRoutes from './routes/search.routes';
 import { globalErrorHandler } from './middlewares/errorHandler.middleware';
 import { logger } from './utils/logger';
+import { User } from './models/user.model';
 
 const app = express();
 
@@ -68,6 +69,39 @@ app.use(passport.initialize());
 
 // e. Phục vụ các file tĩnh (Static Files) như hình ảnh avatar
 app.use('/uploads', express.static('public/uploads'));
+
+// f. Middleware thông minh tự động fallback avatar (Giải quyết triệt để 2 vấn đề Enterprise):
+// 1. Lỗi Caching Frontend: Frontend request URL cũ (đã bị xóa khi upload ảnh mới) -> Tự động Redirect sang URL mới.
+// 2. Lỗi Mất File: Ổ cứng Render Free tự động xóa file ảnh sau khi sleep -> Tự động Redirect sang Avatar chữ (Dicebear).
+app.use('/uploads/avatars/:filename', async (req: Request, res: Response) => {
+    try {
+        const filename = req.params.filename as string;
+        const match = filename.match(/^avatar_([a-fA-F0-9]{24})_/);
+        
+        if (match && match[1]) {
+            const userId = match[1];
+            const user = await User.findById(userId).select('avatar_url full_name').lean();
+            
+            if (user) {
+                // Nếu DB có lưu ảnh mới và khác với file đang bị 404 này -> Chuyển hướng tới ảnh mới
+                if (user.avatar_url && !user.avatar_url.includes(filename)) {
+                    res.redirect(302, user.avatar_url);
+                    return;
+                }
+                
+                // Nếu mất ảnh gốc, dùng Initials (Dicebear) dự phòng, hoàn toàn không bị lỗi broken icon
+                const seed = encodeURIComponent(user.full_name || 'User');
+                res.redirect(302, `https://api.dicebear.com/7.x/initials/svg?seed=${seed}&backgroundColor=6366f1&textColor=ffffff`);
+                return;
+            }
+        }
+        
+        // Fallback mặc định
+        res.redirect(302, `https://api.dicebear.com/7.x/initials/svg?seed=DevSpaceZ&backgroundColor=6366f1&textColor=ffffff`);
+    } catch (error) {
+        res.redirect(302, `https://api.dicebear.com/7.x/initials/svg?seed=Error&backgroundColor=ef4444&textColor=ffffff`);
+    }
+});
 
 
 // ============================================================================
