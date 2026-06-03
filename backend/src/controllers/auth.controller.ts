@@ -36,18 +36,20 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
 // --- ĐĂNG XUẤT ---
 export const logout = asyncHandler(async (req: Request, res: Response) => {
+    const isSecure = process.env.NODE_ENV === 'production' || !!(process.env.FRONTEND_URL && process.env.FRONTEND_URL.startsWith('https'));
+
     // Xóa cookie jwt_refresh triệt để
     res.clearCookie('jwt_refresh', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax'
+        secure: isSecure,
+        sameSite: (isSecure ? 'none' : 'lax') as 'none' | 'lax'
     });
     
     // Xóa thêm cookie 'jwt' cũ (từ kiến trúc cũ) nếu vẫn còn kẹt trong trình duyệt
     res.clearCookie('jwt', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax'
+        secure: isSecure,
+        sameSite: (isSecure ? 'none' : 'lax') as 'none' | 'lax'
     });
 
     res.status(200).json({
@@ -169,11 +171,13 @@ export const oauthCallback = asyncHandler(async (req: Request, res: Response) =>
     const accessToken = generateAccessToken(user._id.toString());
     const refreshToken = generateRefreshToken(user._id.toString());
 
+    const isSecure = process.env.NODE_ENV === 'production' || !!(process.env.FRONTEND_URL && process.env.FRONTEND_URL.startsWith('https'));
+
     // Thiết lập cookie Refresh Token
     res.cookie('jwt_refresh', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax',
+        secure: isSecure,
+        sameSite: (isSecure ? 'none' : 'lax') as 'none' | 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
     });
 

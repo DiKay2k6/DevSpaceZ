@@ -1,12 +1,14 @@
 import { Response } from 'express';
 
 export const sendTokenResponse = (res: Response, statusCode: number, message: string, user: any, accessToken: string, refreshToken: string) => {
+    const isSecure = process.env.NODE_ENV === 'production' || !!(process.env.FRONTEND_URL && process.env.FRONTEND_URL.startsWith('https'));
+
     // Thiết lập tùy chọn cho Cookie (Refresh Token)
     const cookieOptions = {
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Hết hạn sau 7 ngày
         httpOnly: true, // Mã JavaScript ở Frontend không thể đọc được (Chống XSS)
-        secure: process.env.NODE_ENV === 'production', // Chạy HTTPS ở môi trường Production
-        sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax' // Bảo vệ khỏi tấn công CSRF
+        secure: isSecure, // Chạy HTTPS
+        sameSite: (isSecure ? 'none' : 'lax') as 'none' | 'lax' // Bảo vệ khỏi CSRF, 'none' cho phép Cross-Origin
     };
 
     // Gắn Refresh Token vào Cookie có tên là 'jwt_refresh'
