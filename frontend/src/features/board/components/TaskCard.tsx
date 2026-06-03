@@ -113,7 +113,7 @@ export const TaskCardComponent: React.FC<Props> = ({ task, index, onClick, onDel
                         </div>
                     )}
 
-                    <h4 className="text-[15px] leading-relaxed font-bold text-slate-800 dark:text-slate-100 mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors relative z-10 line-clamp-2">
+                    <h4 className="text-[15px] leading-relaxed font-bold text-slate-800 dark:text-slate-100 mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors relative z-10 line-clamp-2 break-all">
                         {task.title}
                     </h4>
 

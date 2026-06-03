@@ -106,7 +106,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ board, onTaskClick, onUpdate
                     onClick={() => onTaskClick(node, list?.title || '')}
                 >
                     {/* Cột 1: Tên (Thụt lề) */}
-                    <div className="flex items-center gap-2 relative" style={{ paddingLeft: `${level * 28}px` }}>
+                    <div className="flex items-center gap-2 relative min-w-0" style={{ paddingLeft: `${level * 28}px` }}>
                         {/* Tree lines cho các node con */}
                         {level > 0 && (
                             <>
