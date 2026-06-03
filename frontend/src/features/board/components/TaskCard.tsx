@@ -3,6 +3,7 @@ import { Draggable } from '@hello-pangea/dnd';
 import { Task } from '@/features/board/api/board.api';
 import { Clock, AlignLeft, CheckSquare, ChevronUp, ChevronDown, Minus } from 'lucide-react';
 import { differenceInDays, isPast, isToday } from 'date-fns';
+import { useUserProfileStore } from '@/entities/user/model/userProfileStore';
 
 interface Props {
     task: Task;
@@ -15,6 +16,8 @@ interface Props {
 }
 
 export const TaskCardComponent: React.FC<Props> = ({ task, index, onClick, onDelete, isDragDisabled, allTasks, workspaceMembers = [] }) => {
+    const { openProfile } = useUserProfileStore();
+
     // Check Blocked Status
     const isBlocked = React.useMemo(() => {
         if (!task.dependencies || task.dependencies.length === 0 || !allTasks) return false;
@@ -180,7 +183,11 @@ export const TaskCardComponent: React.FC<Props> = ({ task, index, onClick, onDel
                                         src={avatar} 
                                         alt={displayName}
                                         title={displayName}
-                                        className="w-7 h-7 rounded-full object-cover border-2 border-white dark:border-[#1A2133] hover:-translate-y-1 hover:scale-110 hover:z-20 transition-all shadow-sm"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (userIdStr) openProfile(userIdStr);
+                                        }}
+                                        className="w-7 h-7 rounded-full object-cover border-2 border-white dark:border-[#1A2133] hover:-translate-y-1 hover:scale-110 hover:z-20 transition-all shadow-sm cursor-pointer"
                                         style={{ zIndex: 10 - idx }}
                                     />
                                 );

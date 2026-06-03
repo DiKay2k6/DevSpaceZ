@@ -3,6 +3,8 @@ import { Outlet } from 'react-router-dom';
 import { DashboardSidebar } from './components/DashboardSidebar';
 import { DashboardHeader } from './components/DashboardHeader';
 import { FloatingAIAssistant } from '@/features/ai/components/FloatingAIAssistant';
+import { UserProfileModal } from '@/shared/components/UserProfileModal';
+import { GlobalCommandPalette } from '@/shared/components/GlobalCommandPalette';
 
 export const DashboardLayout: React.FC = () => {
     const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
@@ -36,6 +38,8 @@ export const DashboardLayout: React.FC = () => {
 
                 {/* AI Assistant */}
                 <FloatingAIAssistant />
+                <UserProfileModal />
+                <GlobalCommandPalette />
             </div>
         </div>
     );

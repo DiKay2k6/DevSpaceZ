@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { updateMe, uploadAvatar, changePassword, searchUsers, togglePinBoard } from '../controllers/user.controller';
+import { updateMe, uploadAvatar, changePassword, searchUsers, togglePinBoard, getUserProfile } from '../controllers/user.controller';
 import { protect } from '../middlewares/auth.middleware';
 import { uploadAvatar as uploadMiddleware } from '../middlewares/upload.middleware';
 
@@ -22,5 +22,8 @@ router.put('/me/password', changePassword);
 
 // 5. Ghim dự án
 router.post('/me/pinned-boards/:boardId', togglePinBoard);
+
+// 6. Lấy profile public của user
+router.get('/:id/profile', getUserProfile);
 
 export default router;

@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Board, Task } from '@/features/board/api/board.api';
 import { ChevronRight, ChevronDown, Plus, LayoutList, CheckCircle2, Circle, AlertCircle, Clock, Search, Filter } from 'lucide-react';
 import { Button } from '@/shared/ui/Button';
+import { useUserProfileStore } from '@/entities/user/model/userProfileStore';
 
 interface PlanViewProps {
     board: Board;
@@ -23,6 +24,7 @@ const buildTree = (tasks: Task[], parentId?: string): (Task & { children: any[] 
 };
 
 export const PlanView: React.FC<PlanViewProps> = ({ board, onTaskClick, onUpdateTask, searchQuery, selectedAssignees = [], selectedComponent = '' }) => {
+    const { openProfile } = useUserProfileStore();
     const allTasks = useMemo(() => board.lists?.flatMap(l => l.tasks) || [], [board]);
     
     // Xây dựng cây
@@ -156,7 +158,18 @@ export const PlanView: React.FC<PlanViewProps> = ({ board, onTaskClick, onUpdate
                                 {node.assignees.map((a: any, i) => {
                                     const avatarUrl = a.avatar_url ? a.avatar_url : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(a.full_name || 'User')}&backgroundColor=6366f1&textColor=ffffff`;
                                     return (
-                                        <img crossOrigin="anonymous" key={i} src={avatarUrl} className="w-6 h-6 rounded-full border-2 border-white dark:border-[#0B0F19]" title={a.full_name} />
+                                        <img 
+                                            crossOrigin="anonymous" 
+                                            key={i} 
+                                            src={avatarUrl} 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                const userId = typeof a === 'string' ? a : a._id;
+                                                if (userId) openProfile(userId);
+                                            }}
+                                            className="w-6 h-6 rounded-full border-2 border-white dark:border-[#0B0F19] cursor-pointer hover:scale-110 transition-transform" 
+                                            title={a.full_name} 
+                                        />
                                     );
                                 })}
                             </div>

@@ -78,7 +78,6 @@ export const useKanbanLogic = (id: string | undefined) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
     const [selectedComponent, setSelectedComponent] = useState<string>('');
-    const [isCmdPaletteOpen, setIsCmdPaletteOpen] = useState(false);
     const isFilterActive = searchQuery.trim().length > 0 || selectedAssignees.length > 0 || selectedComponent.length > 0;
 
     // Mutation để gọi API cập nhật vị trí thẻ
@@ -145,17 +144,7 @@ export const useKanbanLogic = (id: string | undefined) => {
         if (board) setLocalBoard(board);
     }, [board]);
 
-    // Lắng nghe phím tắt Cmd+K
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                e.preventDefault();
-                setIsCmdPaletteOpen(prev => !prev);
-            }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, []);
+
 
     const { onDragEnd } = useBoardDragAndDrop({
         localBoard,
@@ -212,8 +201,6 @@ export const useKanbanLogic = (id: string | undefined) => {
         setSelectedComponent,
         isFilterActive,
 
-        isCmdPaletteOpen,
-        setIsCmdPaletteOpen,
 
         onDragEnd,
         boardActions

@@ -25,6 +25,7 @@ import ideRoutes from './routes/ide.routes';
 import ideContainerRoutes from './routes/ideContainer.routes';
 import chatRoutes from './routes/chat.routes';
 import aiRoutes from './routes/ai.routes';
+import searchRoutes from './routes/search.routes';
 import { globalErrorHandler } from './middlewares/errorHandler.middleware';
 import { logger } from './utils/logger';
 
@@ -93,6 +94,7 @@ app.use('/api/v1/roles', roleRoutes);
 app.use('/api/v1/ide', ideRoutes);
 app.use('/api/v1/lsp', ideContainerRoutes);
 app.use('/api/v1/chat', chatRoutes);
+app.use('/api/v1/search', searchRoutes);
 
 // Route kiểm tra sức khỏe hệ thống (Health Check)
 app.get('/api/v1/health', (req: Request, res: Response) => {

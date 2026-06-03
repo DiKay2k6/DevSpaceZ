@@ -8,7 +8,7 @@ import { Search, Hash, MessageSquare, Send, Image as ImageIcon, FileVideo, Loade
 import toast from 'react-hot-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface Conversation {
     _id: string;
@@ -25,6 +25,7 @@ export const ChatPage: React.FC = () => {
     const { currentOrganization } = useOrganizationStore();
     const { data: boards } = useBoards(currentOrganization?._id);
     const navigate = useNavigate();
+    const location = useLocation();
     
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [activeTab, setActiveTab] = useState<'boards' | 'direct'>('boards');
@@ -46,13 +47,33 @@ export const ChatPage: React.FC = () => {
         const fetchConversations = async () => {
             try {
                 const res = await chatApi.getConversations();
-                setConversations(res.data.conversations);
+                const fetchedConversations = res.data.conversations;
+                setConversations(fetchedConversations);
+
+                // Check if we came from UserProfileModal
+                if (location.state?.conversationId) {
+                    setActiveTab('direct');
+                    setActiveChatId(location.state.conversationId);
+                    
+                    // Find target user from conversation to set name and avatar
+                    const conv = fetchedConversations.find((c: any) => c._id === location.state.conversationId);
+                    if (conv) {
+                        const otherUser = conv.participants.find((p: any) => p._id !== user?._id);
+                        if (otherUser) {
+                            setActiveChatName(otherUser.full_name);
+                            setActiveChatAvatar(otherUser.avatar_url);
+                        }
+                    }
+                    
+                    // Clear state to not re-trigger on refresh
+                    navigate('/dashboard/chat', { replace: true, state: {} });
+                }
             } catch (error) {
                 console.error("Lỗi lấy danh sách chat cá nhân", error);
             }
         };
         fetchConversations();
-    }, []);
+    }, [location.state, navigate, user?._id]);
 
     const getInitials = (name?: string) => name ? name.charAt(0).toUpperCase() : 'U';
 

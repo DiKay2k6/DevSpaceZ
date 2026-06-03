@@ -5,6 +5,8 @@ import { User } from '../models/user.model';
 import { Board } from '../models/board.model';
 import { Workspace } from '../models/workspace.model';
 import { AppError } from '../utils/appError';
+import { Task } from '../models/task.model';
+import mongoose from 'mongoose';
 
 export const updateMe = asyncHandler(async (req: Request, res: Response) => {
     // req.user được gán từ middleware protect
@@ -129,5 +131,80 @@ export const searchUsers = asyncHandler(async (req: Request, res: Response) => {
     res.status(200).json({
         status: 'success',
         data: { users }
+    });
+});
+
+export const getUserProfile = asyncHandler(async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new AppError('ID người dùng không hợp lệ', 400);
+    }
+
+    const targetUser = await User.findById(id).select('-password').lean();
+    if (!targetUser) {
+        throw new AppError('Không tìm thấy người dùng', 404);
+    }
+
+    // Lấy danh sách các workspace mà user này tham gia
+    const workspaces = await Workspace.find({ 'members.userId': id }).lean();
+    const workspaceIds = workspaces.map(w => w._id);
+
+    // Lấy danh sách các project (board) thuộc các workspace đó
+    const boards = await Board.find({ workspaceId: { $in: workspaceIds } }).lean();
+    const boardIds = boards.map(b => b._id);
+
+    const objectId = new mongoose.Types.ObjectId(id);
+
+    // Tính toán số lượng task của người dùng này trong các bảng đó
+    // Đang làm (In Progress)
+    const inProgressCount = await Task.countDocuments({
+        boardId: { $in: boardIds },
+        assignees: objectId,
+        status: 'In Progress'
+    });
+
+    // Hoàn thành (Done)
+    const doneCount = await Task.countDocuments({
+        boardId: { $in: boardIds },
+        assignees: objectId,
+        status: 'Done'
+    });
+
+    // Quá hạn (Overdue) - Not Done and past due date
+    const overdueCount = await Task.countDocuments({
+        boardId: { $in: boardIds },
+        assignees: objectId,
+        status: { $ne: 'Done' },
+        dueDate: { $lt: new Date() }
+    });
+
+    // 5 công việc gần nhất đang làm
+    const recentTasks = await Task.find({
+        boardId: { $in: boardIds },
+        assignees: objectId,
+        status: { $ne: 'Done' }
+    })
+    .sort({ updatedAt: -1 })
+    .limit(5)
+    .populate('boardId', 'title')
+    .lean();
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            user: targetUser,
+            stats: {
+                inProgress: inProgressCount,
+                done: doneCount,
+                overdue: overdueCount
+            },
+            recentTasks: recentTasks.map(t => ({
+                _id: t._id,
+                title: t.title,
+                status: t.status,
+                boardName: (t.boardId as any)?.title || 'Không rõ'
+            }))
+        }
     });
 });

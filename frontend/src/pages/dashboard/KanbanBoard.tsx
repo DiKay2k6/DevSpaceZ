@@ -7,9 +7,8 @@ import { BoardHeader } from '@/features/board/components/BoardHeader'; // Vite r
 import { BoardSettingsDrawer } from '@/features/board/components/BoardSettingsDrawer';
 import { BoardColumn } from '@/features/board/components/BoardColumn';
 import { PlanView } from '@/features/board/components/PlanView';
-import { CommandPalette } from '@/features/board/components/CommandPalette';
 import { Button } from '@/shared/ui/Button';
-import { Loader2, Plus, X, Kanban, List, Command, Sparkles } from 'lucide-react';
+import { Loader2, Plus, X, Kanban, List, Sparkles } from 'lucide-react';
 import { useKanbanLogic } from '@/features/board/hooks/useKanbanLogic';
 import { AIGenerateModal } from '@/features/board/components/AIGenerateModal';
 
@@ -260,18 +259,6 @@ export const KanbanBoard: React.FC = () => {
                     isUpdating={boardActions.isUpdatingBoard}
                     canEditBoard={canEditBoard}
                     canDeleteBoard={canDeleteBoard}
-                />
-
-                <CommandPalette
-                    isOpen={isCmdPaletteOpen}
-                    onClose={() => setIsCmdPaletteOpen(false)}
-                    tasks={localBoard.lists?.flatMap(l => l.tasks) || []}
-                    onUpdateTask={handleUpdateTask}
-                    onOpenTask={(task) => {
-                        const list = localBoard.lists?.find(l => l.tasks.some(t => t._id === task._id));
-                        setSelectedTask(task);
-                        setSelectedListName(list?.title || '');
-                    }}
                 />
 
                 <AIGenerateModal 
