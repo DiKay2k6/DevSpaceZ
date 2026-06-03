@@ -4,7 +4,8 @@ import crypto from 'crypto';
 import Redis from 'ioredis';
 import { logger } from '../utils/logger';
 
-const redisConnection = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+const redisConnection = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', { maxRetriesPerRequest: null });
+redisConnection.on('error', (err) => logger.error('BullMQ Redis Error:', err.message));
 
 // Create the Queue
 export const gitEventsQueue = new Queue('git-events', { connection: redisConnection as any });

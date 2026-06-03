@@ -4,7 +4,8 @@ import { User } from '../models/user.model';
 import { GitDailyStat } from '../models/gitStat.model';
 import { logger } from '../utils/logger';
 
-const redisConnection = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+const redisConnection = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', { maxRetriesPerRequest: null });
+redisConnection.on('error', (err) => logger.error('BullMQ Redis Error:', err.message));
 
 // Utility to start the day at 00:00:00 UTC
 const getStartOfDay = (dateString: string | Date) => {
