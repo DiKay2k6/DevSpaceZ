@@ -8,8 +8,10 @@ import { RoleManagement } from '@/features/organization/components/RoleManagemen
 import { useAuthStore } from '@/entities/user/model/authStore';
 import { useTeamManagement } from '@/features/organization/hooks/useTeamManagement';
 import { useRoles } from '@/features/organization/hooks/useRoles';
+import { useUserProfileStore } from '@/entities/user/model/userProfileStore';
 
 export const Team: React.FC = () => {
+    const { openProfile } = useUserProfileStore();
     const { user: currentUser } = useAuthStore();
     const {
         currentOrganization,
@@ -131,8 +133,11 @@ export const Team: React.FC = () => {
                                 {searchedUsers.map(u => (
                                     <div key={u._id} className="flex items-center justify-between p-3 bg-white dark:bg-[#151A26] rounded-xl shadow-sm border border-slate-100 dark:border-white/5">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center font-bold uppercase shrink-0">
-                                                {u.avatar_url ? <img src={u.avatar_url} alt="avt" className="w-full h-full rounded-full object-cover" /> : u.full_name?.substring(0, 2) || '??'}
+                                            <div 
+                                                className="w-10 h-10 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center font-bold uppercase shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                                                onClick={() => openProfile(u._id)}
+                                            >
+                                                {u.avatar_url ? <img src={u.avatar_url} alt="avt" className="w-full h-full rounded-full object-cover" crossOrigin="anonymous" /> : u.full_name?.substring(0, 2) || '??'}
                                             </div>
                                             <div>
                                                 <p className="font-bold text-sm text-slate-800 dark:text-white">{u.full_name}</p>
@@ -161,8 +166,11 @@ export const Team: React.FC = () => {
                             {contacts.map(c => (
                                 <div key={c._id} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-white/[0.02] rounded-2xl border border-slate-200 dark:border-white/5 hover:border-indigo-300 dark:hover:border-indigo-500/50 transition-colors group">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 bg-white dark:bg-[#1A202C] text-slate-600 rounded-full flex items-center justify-center font-bold uppercase shrink-0 shadow-sm">
-                                            {c.avatar_url ? <img src={c.avatar_url} alt="avt" className="w-full h-full rounded-full object-cover" /> : c.full_name?.substring(0, 2) || '??'}
+                                        <div 
+                                            className="w-12 h-12 bg-white dark:bg-[#1A202C] text-slate-600 rounded-full flex items-center justify-center font-bold uppercase shrink-0 shadow-sm cursor-pointer hover:scale-105 transition-transform"
+                                            onClick={() => openProfile(c._id)}
+                                        >
+                                            {c.avatar_url ? <img src={c.avatar_url} alt="avt" className="w-full h-full rounded-full object-cover" crossOrigin="anonymous" /> : c.full_name?.substring(0, 2) || '??'}
                                         </div>
                                         <div>
                                             <p className="font-bold text-sm text-slate-800 dark:text-white">{c.full_name}</p>
@@ -307,9 +315,12 @@ export const Team: React.FC = () => {
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
                                                     <div className="relative">
-                                                        <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-600 overflow-hidden text-sm shrink-0 shadow-sm border border-slate-200 dark:border-white/10">
+                                                        <div 
+                                                            className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-600 overflow-hidden text-sm shrink-0 shadow-sm border border-slate-200 dark:border-white/10 cursor-pointer hover:scale-105 transition-transform"
+                                                            onClick={() => openProfile(member.userId._id)}
+                                                        >
                                                             {member.userId.avatar_url ? (
-                                                                <img src={member.userId.avatar_url} alt="avt" className="w-full h-full object-cover" />
+                                                                <img src={member.userId.avatar_url} alt="avt" className="w-full h-full object-cover" crossOrigin="anonymous" />
                                                             ) : (
                                                                 getInitials(member.userId.full_name)
                                                             )}
@@ -494,9 +505,16 @@ export const Team: React.FC = () => {
                                 <div className="flex items-center justify-between border-t border-slate-100 dark:border-white/5 pt-4">
                                     <div className="flex -space-x-2">
                                         {subteam.members?.slice(0, 5).map((m: any, i) => (
-                                            <div key={m.userId?._id || i} className="w-8 h-8 rounded-full border-2 border-white dark:border-[#111520] bg-slate-200 flex items-center justify-center overflow-hidden text-[10px] font-bold text-slate-600">
+                                            <div 
+                                                key={m.userId?._id || i} 
+                                                className="w-8 h-8 rounded-full border-2 border-white dark:border-[#111520] bg-slate-200 flex items-center justify-center overflow-hidden text-[10px] font-bold text-slate-600 cursor-pointer hover:scale-110 transition-transform relative z-10"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (m.userId?._id) openProfile(m.userId._id);
+                                                }}
+                                            >
                                                 {m.userId?.avatar_url ? (
-                                                    <img src={m.userId.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                                                    <img src={m.userId.avatar_url} alt="Avatar" className="w-full h-full object-cover" crossOrigin="anonymous" />
                                                 ) : (
                                                     getInitials(m.userId?.full_name || 'U')
                                                 )}

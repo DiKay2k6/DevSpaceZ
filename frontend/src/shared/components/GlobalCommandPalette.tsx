@@ -63,7 +63,7 @@ export const GlobalCommandPalette: React.FC = () => {
         try {
             setLoading(true);
             const res = await api.get(`/search?q=${encodeURIComponent(q)}`);
-            setResults(res.data.data);
+            setResults(res.data?.data || { boards: [], tasks: [] });
         } catch (error) {
             console.error(error);
         } finally {
@@ -95,17 +95,17 @@ export const GlobalCommandPalette: React.FC = () => {
                         <div className="p-8 text-center text-slate-500 font-medium text-sm">
                             Gõ ít nhất 2 ký tự để tìm kiếm toàn hệ thống.
                         </div>
-                    ) : results.boards.length === 0 && results.tasks.length === 0 && !loading ? (
+                    ) : (!results?.boards?.length && !results?.tasks?.length) && !loading ? (
                         <div className="p-8 text-center text-slate-500 font-medium text-sm">
                             Không tìm thấy kết quả nào phù hợp.
                         </div>
                     ) : (
                         <div className="space-y-4 py-2">
                             {/* Boards Section */}
-                            {results.boards.length > 0 && (
+                            {(results?.boards?.length ?? 0) > 0 && (
                                 <div>
                                     <h3 className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Dự án (Projects)</h3>
-                                    {results.boards.map(board => (
+                                    {results?.boards?.map(board => (
                                         <div 
                                             key={board._id} 
                                             className="group px-3 py-2.5 mx-1 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors cursor-pointer flex items-center gap-3"
@@ -126,10 +126,10 @@ export const GlobalCommandPalette: React.FC = () => {
                             )}
 
                             {/* Tasks Section */}
-                            {results.tasks.length > 0 && (
+                            {(results?.tasks?.length ?? 0) > 0 && (
                                 <div>
                                     <h3 className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 mt-4">Thẻ công việc (Tasks)</h3>
-                                    {results.tasks.map(task => (
+                                    {results?.tasks?.map(task => (
                                         <div 
                                             key={task._id} 
                                             className="group px-3 py-2.5 mx-1 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors cursor-pointer flex items-center gap-3"

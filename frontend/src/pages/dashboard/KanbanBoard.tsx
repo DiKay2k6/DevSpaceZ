@@ -134,16 +134,6 @@ export const KanbanBoard: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Command Palette Hint */}
-                    <button
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-white/10 transition-colors shadow-sm border border-transparent hover:border-slate-200 dark:hover:border-white/10"
-                        onClick={() => setIsCmdPaletteOpen(true)}
-                        title="Mở bảng lệnh (Command Palette)"
-                    >
-                        <Command size={14} />
-                        <span className="text-[11px] font-bold tracking-wider uppercase">Menu Lệnh</span>
-                        <kbd className="ml-1 px-1.5 py-0.5 rounded border border-slate-200 dark:border-white/10 bg-white dark:bg-black/20 text-[9px] font-mono font-bold shadow-sm">⌘ K</kbd>
-                    </button>
                 </div>
 
                 {/* Board Canvas (Drag & Drop Context) */}
