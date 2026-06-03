@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Board, boardApi } from '@/features/board/api/board.api';
-import { Star, Users, Filter, Settings, Palette, Search, X, Plus, Hash, Bell, Code2 } from 'lucide-react';
+import { Star, Users, Filter, Settings, Palette, Search, X, Plus, Hash, Bell, Code2, Check } from 'lucide-react';
 import { Button } from '@/shared/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -174,40 +174,70 @@ export const BoardHeader: React.FC<Props> = ({
                     <Star size={18} className={isPinned ? 'fill-current' : ''} />
                 </button>
 
-                {/* Avatar Filters */}
-                <div className="flex items-center gap-1">
-                    {board.workspace?.members?.slice(0, 5).map((member, index) => {
-                        const isSelected = selectedAssignees.includes(member._id);
-                        return (
-                            <button
-                                key={member._id}
-                                onClick={() => openProfile(member._id)}
-                                onContextMenu={(e) => {
-                                    e.preventDefault();
-                                    toggleAssignee(member._id);
-                                }}
-                                className={`relative rounded-full transition-all ${isSelected ? 'ring-2 ring-blue-500 ring-offset-1 dark:ring-offset-[#111520] z-20' : 'hover:-translate-y-0.5 opacity-70 hover:opacity-100 hover:z-20'} -ml-1.5 first:ml-0`}
-                                title={`Nhấp xem hồ sơ, Chuột phải để lọc theo ${member.full_name}`}
-                                style={{ zIndex: isSelected ? 20 : 10 - index }}
-                            >
-                                <img 
-                                    crossOrigin="anonymous"
-                                    src={member.avatar_url ? member.avatar_url : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(member.full_name)}&backgroundColor=6366f1&textColor=ffffff`} 
-                                    alt={member.full_name} 
-                                    className="w-7 h-7 rounded-full border border-white dark:border-[#111520] object-cover shadow-sm"
-                                />
-                                {isSelected && (
-                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 text-white rounded-full flex items-center justify-center border border-white dark:border-[#111520]">
-                                        <X size={8} />
+                {/* Assignee Filter Dropdown */}
+                <div className="relative">
+                    <button
+                        onClick={() => setIsFilterOpen(!isFilterOpen)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${selectedAssignees.length > 0 ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' : 'text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-white/5'}`}
+                    >
+                        <Filter size={14} />
+                        Lọc {selectedAssignees.length > 0 && `(${selectedAssignees.length})`}
+                    </button>
+
+                    {isFilterOpen && (
+                        <>
+                            <div className="fixed inset-0 z-40" onClick={() => setIsFilterOpen(false)}></div>
+                            <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-[#1A202C] border border-slate-200 dark:border-white/10 rounded-xl shadow-lg z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                                <div className="p-3 border-b border-slate-100 dark:border-white/5">
+                                    <h3 className="text-sm font-bold text-slate-800 dark:text-white">Lọc theo thành viên</h3>
+                                </div>
+                                <div className="max-h-60 overflow-y-auto custom-scrollbar p-2 space-y-1">
+                                    {board.workspace?.members?.map(member => {
+                                        const isSelected = selectedAssignees.includes(member._id);
+                                        return (
+                                            <button
+                                                key={member._id}
+                                                onClick={() => toggleAssignee(member._id)}
+                                                className={`w-full flex items-center justify-between p-2 rounded-lg transition-colors ${isSelected ? 'bg-blue-50 dark:bg-blue-500/10' : 'hover:bg-slate-50 dark:hover:bg-white/5'}`}
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <div 
+                                                        className="relative z-10 cursor-pointer hover:ring-2 hover:ring-blue-500 rounded-full transition-all"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setIsFilterOpen(false);
+                                                            openProfile(member._id);
+                                                        }}
+                                                        title="Xem hồ sơ"
+                                                    >
+                                                        <img 
+                                                            crossOrigin="anonymous"
+                                                            src={member.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(member.full_name)}&backgroundColor=6366f1&textColor=ffffff`} 
+                                                            alt={member.full_name} 
+                                                            className="w-6 h-6 rounded-full object-cover"
+                                                        />
+                                                    </div>
+                                                    <span className={`text-sm text-left truncate max-w-[130px] ${isSelected ? 'font-bold text-blue-600 dark:text-blue-400' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
+                                                        {member.full_name}
+                                                    </span>
+                                                </div>
+                                                {isSelected && <Check size={14} className="text-blue-500 shrink-0" />}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                {selectedAssignees.length > 0 && (
+                                    <div className="p-2 border-t border-slate-100 dark:border-white/5">
+                                        <button 
+                                            onClick={() => { setSelectedAssignees([]); setIsFilterOpen(false); }}
+                                            className="w-full py-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors"
+                                        >
+                                            Bỏ chọn tất cả
+                                        </button>
                                     </div>
                                 )}
-                            </button>
-                        );
-                    })}
-                    {board.workspace?.members && board.workspace.members.length > 5 && (
-                        <div className="w-7 h-7 -ml-1.5 rounded-full border border-white dark:border-[#111520] bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-600 dark:text-slate-400 shadow-sm z-0">
-                            +{board.workspace.members.length - 5}
-                        </div>
+                            </div>
+                        </>
                     )}
                 </div>
 

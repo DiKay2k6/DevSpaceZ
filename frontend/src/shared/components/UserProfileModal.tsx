@@ -4,7 +4,7 @@ import { useAuthStore } from '@/entities/user/model/authStore';
 import { Modal } from '@/shared/ui/Modal';
 import { Button } from '@/shared/ui/Button';
 import api from '@/shared/api/axiosClient';
-import { MessageSquare, Briefcase, Mail, CheckCircle2, Clock, AlertCircle, Loader2 } from 'lucide-react';
+import { MessageSquare, Briefcase, Mail, CheckCircle2, Clock, AlertCircle, Loader2, GitCommit, GitPullRequest, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -145,6 +145,34 @@ export const UserProfileModal: React.FC = () => {
                                 Chưa có công việc nào đang làm
                             </div>
                         )}
+                    </div>
+
+                    {/* Git Intelligence (Mock) */}
+                    <div className="mb-6">
+                        <h3 className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <Activity size={16} className="text-indigo-500" />
+                            Hoạt động Code (Git)
+                        </h3>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl p-3 flex items-center gap-3">
+                                <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-lg flex items-center justify-center shrink-0">
+                                    <GitCommit size={20} />
+                                </div>
+                                <div>
+                                    <div className="text-xl font-black text-slate-800 dark:text-white">{(data.user._id.charCodeAt(data.user._id.length - 1) % 40) + 12}</div>
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Commits (7 ngày)</div>
+                                </div>
+                            </div>
+                            <div className="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl p-3 flex items-center gap-3">
+                                <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg flex items-center justify-center shrink-0">
+                                    <GitPullRequest size={20} />
+                                </div>
+                                <div>
+                                    <div className="text-xl font-black text-slate-800 dark:text-white">{(data.user._id.charCodeAt(0) % 15) + 3}</div>
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">PRs Đã Merge</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Action */}

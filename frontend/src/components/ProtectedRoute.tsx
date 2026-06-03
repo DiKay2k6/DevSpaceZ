@@ -19,7 +19,7 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
 
     // 2. Nếu chưa đăng nhập -> Đẩy ngay về trang Login
     if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/auth" replace />;
     }
 
     // 3. Nếu đã đăng nhập nhưng không đủ quyền Role -> Đẩy về trang Dashboard chung

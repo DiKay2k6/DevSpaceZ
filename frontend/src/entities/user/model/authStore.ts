@@ -80,7 +80,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     clearSession: () => {
         set({ user: null, accessToken: null, isAuthenticated: false });
         localStorage.removeItem('organization-storage');
-        // Không redirect cứng ở đây, để React Router (ProtectedRoute) tự đẩy về /auth
+        window.location.href = '/auth';
     },
 
     checkAuth: async () => {
