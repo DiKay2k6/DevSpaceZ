@@ -24,8 +24,18 @@ const verifyGitHubSignature = (req: Request) => {
     
     const hmac = crypto.createHmac('sha256', GITHUB_WEBHOOK_SECRET);
     const digest = 'sha256=' + hmac.update(payload).digest('hex');
-
-    return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
+    
+    const isValid = crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
+    
+    if (!isValid) {
+        logger.warn(`GitHub Webhook Signature Mismatch!`);
+        logger.warn(`- Received: ${signature}`);
+        logger.warn(`- Expected: ${digest}`);
+        logger.warn(`- Secret is set correctly in .env? ${process.env.GITHUB_WEBHOOK_SECRET ? 'YES' : 'NO (Using default devspacez_secret)'}`);
+        logger.warn(`- Is req.body a Buffer? ${Buffer.isBuffer(req.body) ? 'YES' : 'NO'}`);
+    }
+    
+    return isValid;
 };
 
 export const handleGitHubWebhook = async (req: Request, res: Response) => {
