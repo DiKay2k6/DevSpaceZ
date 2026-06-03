@@ -63,7 +63,7 @@ export const GlobalCommandPalette: React.FC = () => {
         try {
             setLoading(true);
             const res = await api.get(`/search?q=${encodeURIComponent(q)}`);
-            setResults(res.data?.data || { boards: [], tasks: [] });
+            setResults(res.data || { boards: [], tasks: [] });
         } catch (error) {
             console.error(error);
         } finally {

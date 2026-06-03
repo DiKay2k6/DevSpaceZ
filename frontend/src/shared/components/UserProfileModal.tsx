@@ -50,7 +50,7 @@ export const UserProfileModal: React.FC = () => {
         try {
             setLoading(true);
             const res = await api.get(`/users/${userId}/profile`);
-            setData(res.data.data);
+            setData(res.data);
         } catch (error) {
             console.error(error);
             setData(null);
@@ -64,7 +64,7 @@ export const UserProfileModal: React.FC = () => {
         try {
             setMessaging(true);
             const res = await api.post('/chat/conversation', { targetUserId: userId });
-            const conversationId = res.data.data.conversation._id;
+            const conversationId = res.data.conversation._id;
             closeProfile();
             navigate(`/dashboard/chat`, { state: { conversationId, targetUserId: userId } });
         } catch (error: any) {
