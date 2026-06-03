@@ -201,6 +201,24 @@ export const getUserProfile = asyncHandler(async (req: Request, res: Response) =
     .populate('boardId', 'title')
     .lean();
 
+    // Calculate Git Stats for the last 7 days
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
+    // Lazy import inside function to avoid circular dependencies if any, but better to import at top.
+    // We will just require it here to avoid replacing the top of the file since we don't know the imports layout precisely.
+    const { GitDailyStat } = require('../models/gitStat.model');
+    const gitStatsDoc = await GitDailyStat.find({
+        userId: objectId,
+        date: { $gte: sevenDaysAgo }
+    }).lean();
+
+    const gitStats = gitStatsDoc.reduce((acc: any, curr: any) => {
+        acc.commits += curr.commits || 0;
+        acc.prsMerged += curr.prsMerged || 0;
+        return acc;
+    }, { commits: 0, prsMerged: 0 });
+
     res.status(200).json({
         status: 'success',
         data: {
@@ -215,7 +233,8 @@ export const getUserProfile = asyncHandler(async (req: Request, res: Response) =
                 title: t.title,
                 status: t.status,
                 boardName: (t.boardId as any)?.title || 'Không rõ'
-            }))
+            })),
+            gitStats
         }
     });
 });

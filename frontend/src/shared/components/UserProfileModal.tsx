@@ -28,6 +28,10 @@ interface UserProfileData {
         status: string;
         boardName: string;
     }[];
+    gitStats?: {
+        commits: number;
+        prsMerged: number;
+    };
 }
 
 export const UserProfileModal: React.FC = () => {
@@ -246,7 +250,7 @@ export const UserProfileModal: React.FC = () => {
                                         </div>
                                         <div className="relative z-10 flex flex-col">
                                             <span className="text-white/60 text-[11px] font-bold uppercase tracking-wider mb-1">Commits tuần qua</span>
-                                            <span className="text-4xl font-black text-white">{(data.user._id.charCodeAt(data.user._id.length - 1) % 40) + 12}</span>
+                                            <span className="text-4xl font-black text-white">{data.gitStats?.commits || 0}</span>
                                         </div>
                                         <div className="relative z-10 w-12 h-12 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10 text-white">
                                             <ChevronRight size={24} />
@@ -258,7 +262,7 @@ export const UserProfileModal: React.FC = () => {
                                         </div>
                                         <div className="relative z-10 flex flex-col">
                                             <span className="text-white/80 text-[11px] font-bold uppercase tracking-wider mb-1">PRs Đã Merge</span>
-                                            <span className="text-4xl font-black text-white">{(data.user._id.charCodeAt(0) % 15) + 3}</span>
+                                            <span className="text-4xl font-black text-white">{data.gitStats?.prsMerged || 0}</span>
                                         </div>
                                         <div className="relative z-10 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/20 text-white">
                                             <ChevronRight size={24} />

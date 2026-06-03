@@ -26,6 +26,7 @@ import ideContainerRoutes from './routes/ideContainer.routes';
 import chatRoutes from './routes/chat.routes';
 import aiRoutes from './routes/ai.routes';
 import searchRoutes from './routes/search.routes';
+import gitRoutes from './routes/git.routes';
 import { globalErrorHandler } from './middlewares/errorHandler.middleware';
 import { logger } from './utils/logger';
 import { User } from './models/user.model';
@@ -64,7 +65,12 @@ const limiter = rateLimit({
 app.use('/api', limiter); // Áp dụng cho tất cả các route bắt đầu bằng /api
 
 // d. Body Parser & Cookie Parser
-app.use(express.json({ limit: '5mb' })); // Giới hạn payload 5mb cho phép gửi nội dung HTML lớn
+app.use(express.json({ 
+    limit: '5mb',
+    verify: (req: any, res, buf) => {
+        req.rawBody = buf;
+    }
+}));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use(cookieParser());
 app.use(passport.initialize());
@@ -131,6 +137,7 @@ app.use('/api/v1/ide', ideRoutes);
 app.use('/api/v1/lsp', ideContainerRoutes);
 app.use('/api/v1/chat', chatRoutes);
 app.use('/api/v1/search', searchRoutes);
+app.use('/api/v1/git', gitRoutes);
 
 // Route kiểm tra sức khỏe hệ thống (Health Check)
 app.get('/api/v1/health', (req: Request, res: Response) => {

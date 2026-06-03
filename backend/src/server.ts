@@ -8,6 +8,8 @@ import { initYjsSocket } from './utils/yjsSocket';
 import { initLspSocket } from './utils/lspSocket';
 import './workers/email.worker'; // Khởi động email worker
 
+import { startGitWorker } from './workers/git.worker';
+
 // Nạp file .env trước khi thực thi bất kỳ logic nào
 dotenv.config();
 
@@ -22,6 +24,7 @@ const startServer = async () => {
     initSocket(server);
     initYjsSocket(server);
     initLspSocket(server);
+    startGitWorker();
 
     server.listen(PORT, () => {
         console.log(`🚀 Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`);
