@@ -83,7 +83,13 @@ export const UserProfileModal: React.FC = () => {
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={closeProfile} className="max-w-2xl p-0 overflow-hidden bg-slate-50 dark:bg-[#0B0F19] border-0" hideHeader>
+        <Modal 
+            isOpen={isOpen} 
+            onClose={closeProfile} 
+            maxWidth="2xl"
+            showCloseButton={false}
+            className="p-0 overflow-hidden bg-slate-50 dark:bg-[#0B0F19] border-0"
+        >
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-24">
                     <Loader2 className="animate-spin text-blue-500 mb-4" size={40} />
