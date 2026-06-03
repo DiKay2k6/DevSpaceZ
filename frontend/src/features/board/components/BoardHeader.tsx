@@ -207,19 +207,23 @@ export const BoardHeader: React.FC<Props> = ({
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             setIsFilterOpen(false);
-                                                            openProfile(member._id);
+                                                            if (member._id) {
+                                                                openProfile(member._id);
+                                                            } else {
+                                                                import('react-hot-toast').then(({ default: toast }) => toast.error('Người dùng này đã bị xóa khỏi hệ thống.'));
+                                                            }
                                                         }}
                                                         title="Xem hồ sơ"
                                                     >
                                                         <img 
                                                             crossOrigin="anonymous"
-                                                            src={member.avatar_url ? getAvatarUrl(member.avatar_url) : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(member.full_name)}&backgroundColor=6366f1&textColor=ffffff`} 
-                                                            alt={member.full_name} 
+                                                            src={member.avatar_url ? getAvatarUrl(member.avatar_url) : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(member.full_name || 'Deleted User')}&backgroundColor=6366f1&textColor=ffffff`} 
+                                                            alt={member.full_name || 'Người dùng đã xóa'} 
                                                             className="w-6 h-6 rounded-full object-cover"
                                                         />
                                                     </div>
                                                     <span className={`text-sm text-left truncate max-w-[130px] ${isSelected ? 'font-bold text-blue-600 dark:text-blue-400' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
-                                                        {member.full_name}
+                                                        {member.full_name || 'Người dùng đã xóa'}
                                                     </span>
                                                 </div>
                                                 {isSelected && <Check size={14} className="text-blue-500 shrink-0" />}
