@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { AppError } from '../utils/appError';
+import { cacheService } from '../services/cache.service';
 import { List } from '../models/list.model';
 import { Task } from '../models/task.model';
 import { Board } from '../models/board.model';
@@ -275,6 +276,10 @@ Quy tắc bắt buộc:
                     await Task.bulkWrite(bulkOps);
                 }
             }
+
+            // Xoá cache thống kê Dashboard/Analytics vì vừa thêm nhiều task mới
+            await cacheService.delByPattern('dashboard:metrics:*');
+            await cacheService.delByPattern('analytics:overview:*');
 
             res.status(200).json({
                 status: 'success',
