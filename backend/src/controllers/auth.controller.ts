@@ -42,14 +42,16 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
     res.clearCookie('jwt_refresh', {
         httpOnly: true,
         secure: isSecure,
-        sameSite: (isSecure ? 'none' : 'lax') as 'none' | 'lax'
+        sameSite: (isSecure ? 'none' : 'lax') as 'none' | 'lax',
+        path: '/'
     });
     
     // Xóa thêm cookie 'jwt' cũ (từ kiến trúc cũ) nếu vẫn còn kẹt trong trình duyệt
     res.clearCookie('jwt', {
         httpOnly: true,
         secure: isSecure,
-        sameSite: (isSecure ? 'none' : 'lax') as 'none' | 'lax'
+        sameSite: (isSecure ? 'none' : 'lax') as 'none' | 'lax',
+        path: '/'
     });
 
     res.status(200).json({
@@ -179,6 +181,7 @@ export const oauthCallback = asyncHandler(async (req: Request, res: Response) =>
         secure: isSecure,
         sameSite: (isSecure ? 'none' : 'lax') as 'none' | 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
+        path: '/'
     });
 
     res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?token=${accessToken}`);

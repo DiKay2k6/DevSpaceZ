@@ -317,13 +317,15 @@ export const Team: React.FC = () => {
                                                 <div className="flex items-center gap-3">
                                                     <div className="relative">
                                                         <div 
-                                                            className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-600 overflow-hidden text-sm shrink-0 shadow-sm border border-slate-200 dark:border-white/10 cursor-pointer hover:scale-105 transition-transform"
+                                                            className="w-10 h-10 rounded-full flex items-center justify-center font-bold overflow-hidden text-sm shrink-0 shadow-sm border border-slate-200 dark:border-white/10 cursor-pointer hover:scale-105 transition-transform"
                                                             onClick={() => openProfile(member.userId._id)}
                                                         >
                                                             {member.userId.avatar_url ? (
                                                                 <img src={member.userId.avatar_url ? getAvatarUrl(member.userId.avatar_url) : ""} alt="avt" className="w-full h-full object-cover" crossOrigin="anonymous" />
                                                             ) : (
-                                                                getInitials(member.userId.full_name)
+                                                                <div className="w-full h-full bg-gradient-to-tr from-blue-600 to-purple-600 text-white flex items-center justify-center">
+                                                                    {getInitials(member.userId.full_name)}
+                                                                </div>
                                                             )}
                                                         </div>
                                                         {isMe && (
@@ -508,7 +510,7 @@ export const Team: React.FC = () => {
                                         {subteam.members?.slice(0, 5).map((m: any, i) => (
                                             <div 
                                                 key={m.userId?._id || i} 
-                                                className="w-8 h-8 rounded-full border-2 border-white dark:border-[#111520] bg-slate-200 flex items-center justify-center overflow-hidden text-[10px] font-bold text-slate-600 cursor-pointer hover:scale-110 transition-transform relative z-10"
+                                                className="w-8 h-8 rounded-full border-2 border-white dark:border-[#111520] flex items-center justify-center overflow-hidden text-[10px] font-bold cursor-pointer hover:scale-110 transition-transform relative z-10"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     if (m.userId?._id) openProfile(m.userId._id);
@@ -517,7 +519,9 @@ export const Team: React.FC = () => {
                                                 {m.userId?.avatar_url ? (
                                                     <img src={m.userId.avatar_url ? getAvatarUrl(m.userId.avatar_url) : ""} alt="Avatar" className="w-full h-full object-cover" crossOrigin="anonymous" />
                                                 ) : (
-                                                    getInitials(m.userId?.full_name || 'U')
+                                                    <div className="w-full h-full bg-gradient-to-tr from-blue-600 to-purple-600 text-white flex items-center justify-center">
+                                                        {getInitials(m.userId?.full_name || 'U')}
+                                                    </div>
                                                 )}
                                             </div>
                                         ))}
