@@ -4,6 +4,7 @@ import { useAuthStore } from '@/entities/user/model/authStore';
 import { Modal } from '@/shared/ui/Modal';
 import { Button } from '@/shared/ui/Button';
 import api from '@/shared/api/axiosClient';
+import { getAvatarUrl } from '@/shared/utils/avatar';
 import { MessageSquare, Briefcase, Mail, CheckCircle2, Clock, AlertCircle, Loader2, GitCommit, GitPullRequest, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -88,7 +89,7 @@ export const UserProfileModal: React.FC = () => {
                     <div className="flex items-start gap-4 mb-6">
                         <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg overflow-hidden shrink-0">
                             {data.user.avatar_url ? (
-                                <img src={data.user.avatar_url} alt="" className="w-full h-full object-cover" crossOrigin="anonymous" />
+                                <img src={getAvatarUrl(data.user.avatar_url)} alt="" className="w-full h-full object-cover" crossOrigin="anonymous" />
                             ) : (
                                 data.user.full_name.charAt(0).toUpperCase()
                             )}

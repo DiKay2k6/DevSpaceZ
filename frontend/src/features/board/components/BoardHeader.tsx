@@ -8,6 +8,7 @@ import { useAuthStore } from '@/entities/user/model/authStore';
 import { userApi } from '@/features/user/api/user.api';
 import { WorkspaceMemberModal } from '@/features/workspace/components/WorkspaceMemberModal';
 import { TaskRequestsDialog } from './TaskRequestsDialog';
+import { getAvatarUrl } from '@/shared/utils/avatar';
 import { BOARD_KEYS } from '@/features/board/hooks/useBoards';
 import { useUserProfileStore } from '@/entities/user/model/userProfileStore';
 
@@ -212,7 +213,7 @@ export const BoardHeader: React.FC<Props> = ({
                                                     >
                                                         <img 
                                                             crossOrigin="anonymous"
-                                                            src={member.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(member.full_name)}&backgroundColor=6366f1&textColor=ffffff`} 
+                                                            src={member.avatar_url ? getAvatarUrl(member.avatar_url) : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(member.full_name)}&backgroundColor=6366f1&textColor=ffffff`} 
                                                             alt={member.full_name} 
                                                             className="w-6 h-6 rounded-full object-cover"
                                                         />
