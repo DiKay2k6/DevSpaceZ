@@ -92,9 +92,14 @@ export const useAuthStore = create<AuthState>((set) => ({
             // Không có token trên memory -> Thử dùng cookie refresh để lấy mới
             // Axios interceptor sẽ tự lo việc gọi /refresh-token nếu getMe trả về 401
             const response = await authApi.getMe();
+            
+            // getMe() không trả về accessToken, nên ta phải giữ lại token đang có trong state
+            // (token này có thể vừa được cấp mới bởi interceptor refresh-token trước khi getMe() resolve)
+            const currentToken = useAuthStore.getState().accessToken;
+            
             set({
                 user: response.data.user,
-                accessToken: response.data.accessToken || null, // Có thể API getMe không trả về accessToken, interceptor sẽ set
+                accessToken: response.data.accessToken || currentToken,
                 isAuthenticated: true,
                 isCheckingAuth: false
             });
