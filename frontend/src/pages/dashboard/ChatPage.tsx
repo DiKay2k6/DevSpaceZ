@@ -179,7 +179,12 @@ export const ChatPage: React.FC = () => {
                 >
                     <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
                         {otherUser.avatar_url ? (
-                            <img src={otherUser.avatar_url ? getAvatarUrl(otherUser.avatar_url) : ""} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            <>
+                                <img src={otherUser.avatar_url ? getAvatarUrl(otherUser.avatar_url) : ""} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" crossOrigin="anonymous" onError={(e) => { e.currentTarget.style.display='none'; const fb = e.currentTarget.nextElementSibling as HTMLElement; if (fb) fb.style.display='flex'; }} />
+                                <div className="w-full h-full hidden items-center justify-center font-bold text-slate-500 dark:text-slate-400">
+                                    {getInitials(otherUser.full_name)}
+                                </div>
+                            </>
                         ) : (
                             <span className="font-bold text-slate-500 dark:text-slate-400">{getInitials(otherUser.full_name)}</span>
                         )}
@@ -276,7 +281,12 @@ export const ChatPage: React.FC = () => {
                                     {activeChat.type === 'boards' ? (
                                         <Hash size={20} />
                                     ) : activeChatAvatar ? (
-                                        <img src={activeChatAvatar} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                        <>
+                                            <img src={activeChatAvatar} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" crossOrigin="anonymous" onError={(e) => { e.currentTarget.style.display='none'; const fb = e.currentTarget.nextElementSibling as HTMLElement; if (fb) fb.style.display='flex'; }} />
+                                            <div className="w-full h-full hidden items-center justify-center font-bold">
+                                                {getInitials(activeChatName)}
+                                            </div>
+                                        </>
                                     ) : (
                                         <UserIcon size={20} className="text-slate-500 dark:text-slate-400" />
                                     )}
