@@ -5,7 +5,8 @@ import { AppError } from '../utils/appError';
 import { sendTokenResponse } from '../utils/cookie.util';
 import { generateAccessToken, generateRefreshToken } from '../utils/jwt.util';
 import { User, IUser } from '../models/user.model'; // <-- FIX LỖI: Chuyển lên dùng Import tĩnh ở đây
-
+import crypto from 'crypto';
+import { cacheService } from '../services/cache.service';
 const authService = new AuthService();
 
 // --- ĐĂNG KÝ TÀI KHOẢN ---
@@ -42,7 +43,7 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
     res.clearCookie('jwt_refresh', {
         httpOnly: true,
         secure: isSecure,
-        sameSite: (isSecure ? 'none' : 'lax') as 'none' | 'lax',
+        sameSite: 'lax',
         path: '/'
     });
     
@@ -50,7 +51,7 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
     res.clearCookie('jwt', {
         httpOnly: true,
         secure: isSecure,
-        sameSite: (isSecure ? 'none' : 'lax') as 'none' | 'lax',
+        sameSite: 'lax',
         path: '/'
     });
 
@@ -173,16 +174,49 @@ export const oauthCallback = asyncHandler(async (req: Request, res: Response) =>
     const accessToken = generateAccessToken(user._id.toString());
     const refreshToken = generateRefreshToken(user._id.toString());
 
-    const isSecure = process.env.NODE_ENV === 'production' || !!(process.env.FRONTEND_URL && process.env.FRONTEND_URL.startsWith('https'));
+    // Thay vì set cookie trực tiếp (sẽ bị lỗi khác domain khi chạy qua Vercel Proxy),
+    // Ta lưu trữ phiên đăng nhập vào Redis trong 60 giây và trả về session_id
+    const sessionId = crypto.randomUUID();
+    
+    // Lưu vào Redis (TTL = 60s)
+    await cacheService.set(`oauth_session_${sessionId}`, {
+        accessToken,
+        refreshToken,
+        user: {
+            ...user.toObject ? user.toObject() : user,
+            password_hash: undefined,
+            otp_code: undefined
+        }
+    }, 60);
 
-    // Thiết lập cookie Refresh Token
-    res.cookie('jwt_refresh', refreshToken, {
-        httpOnly: true,
-        secure: isSecure,
-        sameSite: (isSecure ? 'none' : 'lax') as 'none' | 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
-        path: '/'
-    });
+    // Chuyển hướng về Frontend kèm theo session_id
+    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?session_id=${sessionId}`);
+});
 
-    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?token=${accessToken}`);
+// --- OAUTH SUCCESS (Dùng session_id để đổi lấy Cookie chuẩn) ---
+export const oauthSuccess = asyncHandler(async (req: Request, res: Response) => {
+    const { sessionId } = req.body;
+    
+    if (!sessionId) {
+        throw new AppError('Thiếu Session ID', 400);
+    }
+
+    const sessionData = await cacheService.get(`oauth_session_${sessionId}`);
+    
+    if (!sessionData) {
+        throw new AppError('Phiên đăng nhập đã hết hạn hoặc không hợp lệ', 400);
+    }
+
+    // Đã lấy được dữ liệu thành công -> Xóa khỏi Redis để tránh tái sử dụng
+    await cacheService.del(`oauth_session_${sessionId}`);
+
+    // Gửi token và cookie về Frontend (Lúc này API chạy qua Vercel nên Cookie sẽ có Domain của Vercel)
+    sendTokenResponse(
+        res,
+        200,
+        'Đăng nhập mạng xã hội thành công',
+        { ...sessionData.user, _id: sessionData.user._id },
+        sessionData.accessToken,
+        sessionData.refreshToken
+    );
 });

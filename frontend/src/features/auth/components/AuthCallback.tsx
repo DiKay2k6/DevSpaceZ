@@ -10,7 +10,7 @@ export const AuthCallback: React.FC = () => {
     const { setAccessToken, checkAuth } = useAuthStore();
 
     useEffect(() => {
-        const token = searchParams.get('token');
+        const sessionId = searchParams.get('session_id');
         const error = searchParams.get('error');
 
         const authenticate = async () => {
@@ -20,16 +20,21 @@ export const AuthCallback: React.FC = () => {
                 return;
             }
 
-            if (token) {
-                // Lưu Access Token vào zustand store
-                setAccessToken(token);
+            if (sessionId) {
                 try {
-                    // Lấy thông tin user
+                    // Đổi sessionId lấy Access Token & Set Cookie qua Vercel Proxy
+                    const res = await authApi.oauthSuccess(sessionId);
+                    
+                    if (res.data?.accessToken) {
+                        setAccessToken(res.data.accessToken);
+                    }
+
+                    // Gọi checkAuth để cập nhật Store chuẩn nhất
                     await checkAuth();
-                    toast.success('Đăng nhập thành công!');
+                    toast.success('Đăng nhập mạng xã hội thành công!');
                     navigate('/dashboard', { replace: true });
-                } catch (err) {
-                    toast.error('Không thể xác thực thông tin người dùng.');
+                } catch (err: any) {
+                    toast.error(err || 'Không thể xác thực thông tin người dùng.');
                     navigate('/auth', { replace: true });
                 }
             } else {

@@ -4,7 +4,7 @@ import { register, login, logout, verifyOTP, resendOTP, getMe, getAllUsers, forg
 import { protect } from '../middlewares/auth.middleware';
 import { restrictTo } from '../middlewares/authorize.middleware'; // Import middleware phân quyền
 import passport from '../utils/passport';
-import { oauthCallback } from '../controllers/auth.controller';
+import { oauthCallback, oauthSuccess } from '../controllers/auth.controller';
 
 // Import Middleware và các Schema
 import { validate } from '../middlewares/validate.middleware';
@@ -31,6 +31,8 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
 
 router.get('/github', passport.authenticate('github', { scope: ['user:email'], session: false }));
 router.get('/github/callback', passport.authenticate('github', { failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth?error=OAuthFailed`, session: false }), oauthCallback);
+
+router.post('/oauth-success', oauthSuccess);
 
 // Route refresh token
 router.post('/refresh-token', refreshTokenController);

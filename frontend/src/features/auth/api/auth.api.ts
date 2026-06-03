@@ -44,6 +44,10 @@ export const authApi = {
         return axiosClient.post('/auth/logout');
     },
 
+    oauthSuccess: (sessionId: string) => {
+        return axiosClient.post('/auth/oauth-success', { sessionId });
+    },
+
     getMe: () => {
         return axiosClient.get('/auth/me');
     },

@@ -8,7 +8,7 @@ export const sendTokenResponse = (res: Response, statusCode: number, message: st
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Hết hạn sau 7 ngày
         httpOnly: true, // Mã JavaScript ở Frontend không thể đọc được (Chống XSS)
         secure: isSecure, // Chạy HTTPS
-        sameSite: (isSecure ? 'none' : 'lax') as 'none' | 'lax', // Bảo vệ khỏi CSRF, 'none' cho phép Cross-Origin
+        sameSite: 'lax' as 'lax', // Bảo vệ khỏi CSRF, 'none' cho phép Cross-Origin
         path: '/'
     };
 

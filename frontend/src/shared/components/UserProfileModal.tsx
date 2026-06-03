@@ -63,7 +63,7 @@ export const UserProfileModal: React.FC = () => {
         if (!userId || userId === currentUser?._id) return;
         try {
             setMessaging(true);
-            const res = await api.post('/chat/conversation', { targetUserId: userId });
+            const res = await api.post('/chat/conversations', { targetUserId: userId });
             const conversationId = res.data.conversation._id;
             closeProfile();
             navigate(`/dashboard/chat`, { state: { conversationId, targetUserId: userId } });
