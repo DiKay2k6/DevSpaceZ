@@ -5,6 +5,10 @@
       "destination": "https://devspacez.onrender.com/uploads/:path*"
     },
     {
+      "source": "/api/:path*",
+      "destination": "https://devspacez.onrender.com/api/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

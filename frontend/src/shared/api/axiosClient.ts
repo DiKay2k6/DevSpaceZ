@@ -3,7 +3,8 @@ import { tokenManager } from './tokenManager';
 
 // 1. Khởi tạo một instance của Axios với các cấu hình mặc định
 const axiosClient = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/api/v1', // Sử dụng VITE_API_URL khi deploy, fallback proxy khi local
+    // Sử dụng relative path /api/v1 để Vercel Proxy hoạt động, khắc phục lỗi Safari ITP Cross-Origin
+    baseURL: import.meta.env.MODE === 'development' ? (import.meta.env.VITE_API_URL || '/api/v1') : '/api/v1',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -65,8 +66,8 @@ axiosClient.interceptors.response.use(
                 if (!isRefreshing) {
                     isRefreshing = true;
                     try {
-                        // Gọi API Refresh Token thông qua Proxy
-                        const baseURL = import.meta.env.VITE_API_URL || '/api/v1';
+                        // Sử dụng relative path để gọi Proxy
+                        const baseURL = import.meta.env.MODE === 'development' ? (import.meta.env.VITE_API_URL || '/api/v1') : '/api/v1';
                         const response = await axios.post(`${baseURL}/auth/refresh-token`, {}, { withCredentials: true });
                         const newAccessToken = response.data.data.accessToken;
 

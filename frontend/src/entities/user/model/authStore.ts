@@ -69,22 +69,12 @@ export const useAuthStore = create<AuthState>((set) => ({
             set({ user: null, accessToken: null, isAuthenticated: false });
             // Xóa Organization của user cũ để user mới không bị dính
             localStorage.removeItem('organization-storage');
-            
-            // Chỉ hard reload nếu đang ở trong Dashboard để xóa query cache, 
-            // nếu đang ở public thì không cần để tránh reload loop.
-            if (window.location.pathname.startsWith('/dashboard')) {
-                window.location.href = '/auth';
-            }
         }
     },
 
     clearSession: () => {
         set({ user: null, accessToken: null, isAuthenticated: false });
         localStorage.removeItem('organization-storage');
-        // Chỉ reload/chuyển hướng nếu không phải đang ở trang auth
-        if (!window.location.pathname.startsWith('/auth')) {
-            window.location.href = '/auth';
-        }
     },
 
     checkAuth: async () => {
