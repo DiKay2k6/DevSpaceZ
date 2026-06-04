@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/entities/user/model/authStore';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { authApi } from '@/features/auth/api/auth.api';
 
 export const AuthCallback: React.FC = () => {
     const [searchParams] = useSearchParams();
@@ -34,7 +35,8 @@ export const AuthCallback: React.FC = () => {
                     toast.success('Đăng nhập mạng xã hội thành công!');
                     navigate('/dashboard', { replace: true });
                 } catch (err: any) {
-                    toast.error(err || 'Không thể xác thực thông tin người dùng.');
+                    const errorMessage = err?.response?.data?.message || err?.message || 'Không thể xác thực thông tin người dùng.';
+                    toast.error(errorMessage);
                     navigate('/auth', { replace: true });
                 }
             } else {
