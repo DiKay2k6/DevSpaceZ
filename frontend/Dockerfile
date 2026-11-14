@@ -5,7 +5,8 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy các thư mục cần thiết
+# Copy các thư mục và file cấu hình cần thiết
+COPY tsconfig.base.json ./
 COPY frontend/ ./frontend/
 COPY shared/ ./shared/
 
