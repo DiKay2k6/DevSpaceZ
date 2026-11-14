@@ -1,6 +1,42 @@
+# Dependencies
 node_modules/
+
+# Environment variables
 .env
+.env.*
+!.env.example
+
+# Build outputs
 dist/
+dist-ssr/
 build/
+*.tsbuildinfo
+
+# Test & Lint caches
+coverage/
+.eslintcache
+
+# Logs
+logs/
+*.log
+*.log.gz
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime uploads
+backend/public/uploads/
+
+# OS & Editor files
 .DS_Store
+Thumbs.db
 __MACOSX/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.sw?
+*.local
+
+# AI agent scratch/workflow directory
+.agent/
